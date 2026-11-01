@@ -1,7 +1,15 @@
 {
   "title": "Radio monitor",
-  "listen": "127.0.0.1",
+  "listen": [
+    "127.0.0.1",
+    "::1"
+  ],
   "port": 8080,
   "discovery": true,
-  "groups": []
+  "groups": [],
+  "ice_servers": [
+    {
+      "urls": "stun:stun.cloudflare.com:3478"
+    }
+  ]
 }
