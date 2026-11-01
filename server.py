@@ -16,6 +16,7 @@ from aiortc import (MediaStreamTrack, RTCConfiguration, RTCIceServer,
                     RTCPeerConnection, RTCRtpSender, RTCSessionDescription)
 from av import Packet
 from core import Hub, validate_config
+from discovery import OpusDiscovery, discovery_options
 
 ROOT = pathlib.Path(__file__).resolve().parent
 LOG = logging.getLogger('web-monitor')
@@ -102,6 +103,7 @@ async def same_origin(request, handler):
 
 def create_app(config, demo=False):
     validate_config(config)
+    discovery_config = discovery_options(config)
     app = web.Application(client_max_size=128 * 1024, middlewares=[same_origin])
     hub = Hub(config)
     sessions = {}
@@ -204,13 +206,20 @@ def create_app(config, demo=False):
 
     async def lifecycle(application):
         hub.start()
-        tasks = [asyncio.create_task(reap())]
-        if demo:
-            from demo import generate
-            tasks.append(asyncio.create_task(generate(hub)))
+        tasks = []
+        discovery = None
         try:
+            if discovery_config['enabled'] and not demo:
+                discovery = OpusDiscovery(hub, discovery_config)
+                await discovery.start()
+            tasks.append(asyncio.create_task(reap()))
+            if demo:
+                from demo import generate
+                tasks.append(asyncio.create_task(generate(hub)))
             yield
         finally:
+            if discovery:
+                await discovery.close()
             hub.close()
             for task in tasks:
                 task.cancel()

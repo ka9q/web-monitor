@@ -2,20 +2,6 @@
   "title": "Radio monitor",
   "listen": "127.0.0.1",
   "port": 8080,
-  "max_sessions": 16,
-  "max_channels_per_session": 32,
-  "ice_servers": [],
-  "groups": [
-    {
-      "id": "receivers",
-      "name": "Receivers",
-      "address": "239.1.2.3",
-      "port": 5004,
-      "interface": "192.168.1.10",
-      "payload_types": [111],
-      "channels": [
-        {"ssrc": 12345, "name": "Example receiver", "frequency": "146.520 MHz", "mode": "FM"}
-      ]
-    }
-  ]
+  "discovery": true,
+  "groups": []
 }

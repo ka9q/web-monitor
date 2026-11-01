@@ -1,3 +1,11 @@
+web-monitor (0.2.0) unstable; urgency=medium
+
+  * Discover _opus._udp.local. services via mDNS and manage multicast
+    memberships dynamically. Keep explicit groups and labels as overrides.
+  * Enable discovery by default when no multicast groups are configured.
+
+ -- Web monitor maintainers <web-monitor@localhost>  Sat, 31 Oct 2026 22:00:00 -0700
+
 web-monitor (0.1.0) unstable; urgency=medium
 
   * Initial local package with multicast Opus forwarding, WebRTC browser mixer,

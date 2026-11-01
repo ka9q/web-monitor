@@ -1,2 +1,2 @@
-server.py core.py demo.py usr/local/lib/web-monitor/
+server.py core.py demo.py discovery.py usr/local/lib/web-monitor/
 static/* usr/local/share/web-monitor/static/

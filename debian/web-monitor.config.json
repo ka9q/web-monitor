@@ -5,5 +5,6 @@
   "max_sessions": 16,
   "max_channels_per_session": 32,
   "ice_servers": [],
+  "discovery": true,
   "groups": []
 }

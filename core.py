@@ -94,7 +94,7 @@ class Hub:
     def __init__(self, config):
         self.config = config
         self.channels = {}
-        self.sockets = []
+        self.sockets = {}
         self.invalid = 0
         self.ignored = 0
         self.max_channels = config.get('max_channels', 256)
@@ -135,25 +135,45 @@ class Hub:
     def by_id(self):
         return {channel.id: channel for channel in self.channels.values()}
 
+    @staticmethod
+    def endpoint(group):
+        return (group['address'], group['port'], group.get('interface', '0.0.0.0'))
+
     def start(self):
         self.loop = asyncio.get_running_loop()
         try:
             for group in self.config.get('groups', []):
-                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-                self.sockets.append(sock)
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024)
-                # Binding to the group isolates same-port groups on Linux and macOS.
-                sock.bind((group['address'], group['port']))
-                membership = socket.inet_aton(group['address']) + socket.inet_aton(group.get('interface', '0.0.0.0'))
-                sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
-                if hasattr(socket, 'IP_MULTICAST_ALL'):
-                    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_ALL, 0)
-                sock.setblocking(False)
-                self.loop.add_reader(sock.fileno(), self._read, sock, group)
+                self.add_group(group)
         except Exception:
             self.close()
             raise
+
+    def add_group(self, group):
+        validate_config({'groups': [group]})
+        endpoint = self.endpoint(group)
+        if endpoint in self.sockets:
+            return
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        try:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024)
+            sock.bind((group['address'], group['port']))
+            membership = socket.inet_aton(group['address']) + socket.inet_aton(group.get('interface', '0.0.0.0'))
+            sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
+            if hasattr(socket, 'IP_MULTICAST_ALL'):
+                sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_ALL, 0)
+            sock.setblocking(False)
+            self.loop.add_reader(sock.fileno(), self._read, sock, group)
+            self.sockets[endpoint] = sock
+        except Exception:
+            sock.close()
+            raise
+
+    def remove_group(self, endpoint):
+        sock = self.sockets.pop(endpoint, None)
+        if sock:
+            self.loop.remove_reader(sock.fileno())
+            sock.close()  # Closing the socket drops its multicast memberships.
 
     def _read(self, sock, group):
         # Limit each callback so a busy receiver cannot starve HTTP / ICE.
@@ -165,11 +185,8 @@ class Hub:
             self.ingest(group, data, source[0])
 
     def close(self):
-        for sock in self.sockets:
-            if self.loop:
-                self.loop.remove_reader(sock.fileno())
-            sock.close()
-        self.sockets.clear()
+        for endpoint in list(self.sockets):
+            self.remove_group(endpoint)
 
 
 def validate_config(config):

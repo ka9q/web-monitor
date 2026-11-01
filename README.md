@@ -3,7 +3,8 @@
 A standalone browser listener for existing ka9q-radio Opus/RTP multicast streams.
 No receiver tuning controls and no dependency on ka9q-web.
 
-- Joins configured IPv4 multicast groups once and discovers streams by group,
+- Discovers `_opus._udp.local.` advertisements, joins their IPv4 multicast
+  groups, and discovers streams by group,
   source IPv4 address, and SSRC. Multiple SSRCs per group are supported.
 - Forwards the encoded Opus payloads unchanged through aiortc's encoded-packet
   path. WebRTC provides new RTP headers, DTLS-SRTP, ICE, and RTCP.
@@ -43,80 +44,74 @@ to start listening. Selecting a channel starts audio immediately. The first is a
 The demo generates Opus and feeds the same RTP parser and forwarding pipeline,
 but does not join real multicast groups.
 
-## Connect your receivers
+## Connect your receivers — automatic discovery
+
+Install the dependencies and copy the minimal example configuration:
 
 ```bash
 sudo install -d -m 0755 /etc/radio
 sudo install -m 0644 config.example.json /etc/radio/web-monitor.json
-```
-
-The installed configuration is `/etc/radio/web-monitor.json`.
-Edit its example values before starting:
-
-- `address`: the numeric multicast address carrying **Opus audio**, not the
-  receiver's status/control group.
-- `port`: its RTP UDP port.
-- `interface`: the **local IPv4 address** of the receiving network interface,
-  not its device name. Use `0.0.0.0` for OS-selected membership routing.
-- `payload_types`: the actual RTP payload type number(s) carrying Opus in that
-  group. **111 is an example, not a codec detector.** Other payload types are
-  ignored so PCM/status packets are not accidentally forwarded as Opus.
-- `id`: any stable unique group identifier, used to preserve channel identity.
-
-Add as many group objects as needed. Streams are discovered when RTP arrives.
-Example minimal group:
-
-```json
-{
-  "id": "local-opus",
-  "name": "Local receivers",
-  "address": "239.1.2.3",
-  "port": 5004,
-  "interface": "192.168.1.10",
-  "payload_types": [111]
-}
-```
-
-Optional `channels` entries assign labels by SSRC. SSRC can be a JSON integer
-or a string such as `"0x1234abcd"`. Add `"source": "192.168.1.20"` to distinguish
-senders reusing an SSRC. With both source and SSRC specified, the channel appears
-even before it sends its first packet, useful for squelched channels. Without
-labels, the page shows group name and SSRC. Example:
-
-```json
-"channels": [
-  {
-    "ssrc": 12345,
-    "source": "192.168.1.20",
-    "name": "Local calling channel",
-    "frequency": "146.520 MHz",
-    "mode": "FM"
-  }
-]
-```
-
-Start the gateway:
-
-```bash
 .venv/bin/python server.py --config /etc/radio/web-monitor.json
 ```
 
-Open **http://localhost:8080/**. If the gateway and browser are on different
-machines, use HTTPS with a certificate trusted by the browser:
+Edit an existing configuration rather than overwriting it. Discovery can be
+selected with just:
 
-```bash
-.venv/bin/python server.py --config /etc/radio/web-monitor.json --listen 0.0.0.0 \
-  --cert fullchain.pem --key privkey.pem
+```json
+{"discovery": true}
 ```
 
-Alternatively put the HTTP endpoint behind an existing HTTPS reverse proxy,
-keeping the original Host header. The gateway defaults to `127.0.0.1:8080`.
-This is a trusted-network prototype without login or a production abuse-control
-layer; add your existing access controls before exposing the HTTP API publicly.
+The gateway browses `_opus._udp.local.` via mDNS, reads the SRV port and the
+IPv4 multicast addresses of its target, and joins each advertised stream.
+ka9q-radio's Opus payload type 111 is the default. No unicast DNS queries or
+Avahi daemon/D-Bus access are needed. The service instance name labels the group;
+individual channels are still identified by SSRC until status metadata is added.
 
-HTTP(S) carries only the page, catalogue, negotiation, and subscription changes.
-Audio uses the independently negotiated WebRTC UDP path. An HTTPS proxy does
-not relay the media. An SSH HTTP port-forward likewise does not tunnel WebRTC.
+On Linux, automatic interface selection uses up, multicast-capable interfaces
+and excludes loopback; it skips ordinary WireGuard links. To choose the LAN
+explicitly, provide its local **IPv4 address**, not its interface name:
+
+```json
+{
+  "discovery": {
+    "interfaces": ["192.168.1.10"],
+    "payload_types": [111]
+  }
+}
+```
+
+SRV updates change memberships; goodbye/expiry removes them once no other service
+references the endpoint. Quiet channel rows remain listed to preserve selections.
+Only multicast IPv4 targets are accepted, with a default limit of 64 discovered
+memberships and 128 tracked service/interface pairs. Override those with
+`discovery.max_groups` and `discovery.max_services` if needed. mDNS discovery is
+local-link and unauthenticated: enable it only on receiver LANs you trust, because
+advertised audio becomes available to listeners. Existing multicast groups do
+not need to cross the Internet; WebRTC handles delivery to the browser.
+
+Open **http://localhost:8080/** on the gateway computer and select a channel.
+For a browser on another machine, use trusted HTTPS, either with `--cert` and
+`--key` or through your existing HTTPS reverse proxy. Preserve its original Host
+header. The gateway defaults to `127.0.0.1:8080` and has no login layer.
+
+### Manual groups and labels
+
+Existing configurations with a nonempty `groups` list retain manual-only
+behavior unless you explicitly set `discovery` to true. With no manual groups,
+discovery defaults to enabled. Set `"discovery": false` to disable it.
+`config.manual.example.json` shows the previous explicit group configuration.
+It uses numeric IPv4 multicast addresses and a local interface IPv4 address.
+The `payload_types` list must identify the Opus payloads, never PCM or IQ.
+
+Manual groups may coexist with discovery and take precedence for a matching
+endpoint. Their existing labels and channel IDs are preserved. Optional channel
+entries provide `ssrc`, `name`, `frequency`, `mode`, and `source`; an explicit
+source and SSRC can list a configured silent channel before its first packet.
+SSRC may be a JSON integer or a hexadecimal string such as `"0x1234abcd"`.
+
+HTTP(S) carries only the page, catalogue, negotiation and subscription changes.
+Audio uses the separately negotiated WebRTC UDP path. An HTTPS proxy or SSH HTTP
+port-forward does not relay the WebRTC media.
 
 ## Network / NAT
 
@@ -166,7 +161,8 @@ may also produce a Quiet indication.
 
 If the list stays empty, check the multicast interface, group, UDP port and RTP
 payload type. Numeric group addresses are required in this first version; it
-does not yet resolve ka9q multicast service names or parse radiod status traffic.
+does not yet parse radiod status traffic. For discovery, check that mDNS on UDP
+5353 is allowed on the receiver LAN and look for `Discovered` messages in the log.
 If the list works but audio does not, inspect browser developer tools and gateway
 logs for ICE/DTLS errors, check HTTPS/browser audio permission, and check UDP rules.
 Use Firefox `about:webrtc` or Chromium `chrome://webrtc-internals` for transport stats.
@@ -179,7 +175,7 @@ Use Firefox `about:webrtc` or Chromium `chrome://webrtc-internals` for transport
 
 The tests cover RTP extensions/padding, payload-type filtering, SSRC separation,
 sequence/timestamp wrap, duplicate suppression, queue bounds, unchanged encoded
-Opus payloads, real loopback multicast reception, and a local HTTP-signaled
+Opus payloads, real loopback multicast reception, automatic mDNS resolution/join/withdrawal, and a local HTTP-signaled
 ICE/DTLS/SRTP connection with decoded audio and subscription gating.
 They require local network socket permissions.
 
@@ -225,3 +221,15 @@ and migration from the manually installed service. It retains this installation'
 `/usr/local` convention and uses `/etc/radio/web-monitor.json`. Unlike the manual
 virtual-environment installation, the package uses Debian Python dependencies.
 The `/usr/local` layout is deliberately for local use, not Debian archive policy.
+
+## Upgrading to discovery (0.2.0)
+
+Install the new dependencies (`pip install -r requirements.txt` in your venv,
+or `apt install python3-zeroconf python3-ifaddr` for the packaged system Python).
+Copy **all four modules**: `server.py`, `core.py`, `demo.py`, and `discovery.py`.
+Set `"discovery": true` in `/etc/radio/web-monitor.json`; remove the manual
+`groups` entries if you want advertised group names rather than manual overrides.
+Then restart `web-monitor`. No change to the hardened service is required.
+Discovery needs UDP 5353 on the LAN in addition to the RTP multicast groups.
+The new code was tested with actual local mDNS announcements, multicast input,
+withdrawal, and WebRTC; ka9q-radio advertisements still need a live field test.

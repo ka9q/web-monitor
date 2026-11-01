@@ -5,7 +5,7 @@ Build on Debian (intended initial target: trixie or later):
 
     sudo apt install build-essential debhelper dh-python python3-all
     dpkg-buildpackage -us -uc -b
-    sudo apt install ../web-monitor_0.1.0_all.deb
+    sudo apt install ../web-monitor_0.2.0_all.deb
 
 Runtime dependencies are resolved by apt. No pip install or virtual environment
 creation happens during package installation. Debian trixie supplies aiortc
@@ -31,9 +31,11 @@ This administrator-requested /usr/local layout is a deliberate Debian Policy
 layout. Do not submit this layout to the Debian archive unchanged. The unit and
 Debian documentation still use their ordinary package-managed system locations.
 
-Configuration is initially empty and localhost-only. Add actual multicast group
-addresses, interface IPv4 addresses, ports and Opus payload types using
-config.example.json from the source as a reference. dpkg preserves local edits
+Configuration is localhost-only with automatic _opus._udp.local. discovery
+enabled. Choose discovery.interfaces to restrict browsing to your receiver LAN,
+or use explicit groups from config.manual.example.json. Existing configuration
+files retain their settings; set discovery to true to opt into discovery when
+using a nonempty manual groups list. dpkg preserves local edits
 on upgrade; package installation must not silently replace an existing config.
 
 Before enabling the packaged unit, remove or relocate any old LOCAL unit at

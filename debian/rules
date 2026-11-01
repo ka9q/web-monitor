@@ -22,6 +22,7 @@ override_dh_installsystemd:
 	dh_installsystemd --no-enable --no-start --no-restart-after-upgrade
 
 # Private flat modules have no useful public import dependency information.
-# Avoid bytecode writes; the launcher runs Python with -B.
+# Runtime bytecode writes are disabled by the launcher's -B option.
+# dh_python3 may arrange byte-compilation during package installation.
 override_dh_python3:
-	dh_python3 --no-guessing-versions --no-compile /usr/local/lib/web-monitor
+	dh_python3 --no-guessing-deps /usr/local/lib/web-monitor

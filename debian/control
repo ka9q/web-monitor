@@ -8,7 +8,7 @@ Rules-Requires-Root: no
 
 Package: web-monitor
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python3 (>= 3.10), python3-aiohttp (>= 3.9), python3-aiortc (>= 1.11), python3-av (>= 14), systemd (>= 247)
+Depends: ${misc:Depends}, ${python3:Depends}, python3 (>= 3.10), python3-aiohttp (>= 3.9), python3-aiortc (>= 1.11), python3-av (>= 14), python3-zeroconf (>= 0.131), python3-ifaddr (>= 0.1.7), systemd (>= 247)
 Description: browser listener for multicast Opus radio channels
  Receives existing Opus/RTP multicast streams and forwards selected channels
  to web browsers over WebRTC without transcoding. Includes independent volume
