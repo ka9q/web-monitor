@@ -1,3 +1,9 @@
+web-monitor (2026.11.01-1-trixie1) trixie; urgency=medium
+
+  * commit 144fbec5db7f93e4efbc7059d5fe01459afe0919
+
+ -- Phil Karn <karn@ka9q.net>  Sat, 31 Oct 2026 21:56:00 -0700
+
 web-monitor (0.2.0) unstable; urgency=medium
 
   * Discover _opus._udp.local. services via mDNS and manage multicast
