@@ -15,7 +15,7 @@ let descending = saved.descending === true;
 let selectedFirst = saved.selectedFirst === true;
 const collator = new Intl.Collator(undefined, {numeric:true, sensitivity:'base'});
 function frequencyHz(value) {
-  if(typeof value === 'number') return Number.isFinite(value) && value > 0 ? value : null;
+  if(typeof value === 'number') return Number.isFinite(value) && value >= 0 ? value : null;
   const match = String(value ?? '').trim().match(/^(\d+(?:\.\d+)?)\s*(GHz|MHz|kHz|Hz)?$/i);
   if(!match) return null;
   return Number(match[1]) * ({ghz:1e9, mhz:1e6, khz:1e3, hz:1}[(match[2] || 'Hz').toLowerCase()]);
@@ -26,7 +26,7 @@ function sortedChannels() {
     if(selectedFirst && selected.has(a.id) !== selected.has(b.id)) return selected.has(a.id) ? -1 : 1;
     let result = 0;
     if(sortKey === 'frequency') {
-      const left = frequencyHz(a.frequency), right = frequencyHz(b.frequency);
+      const left = frequencyHz(a.frequency_hz ?? a.frequency), right = frequencyHz(b.frequency_hz ?? b.frequency);
       if((left === null) !== (right === null)) return left === null ? 1 : -1;
       result = left === null ? 0 : left - right;
     } else if(sortKey === 'activity') result = Number(!a.active) - Number(!b.active);

@@ -101,6 +101,8 @@ class AsyncTests(unittest.IsolatedAsyncioTestCase):
             response = await client.get('/api/channels')
             catalogue = await response.json()
             self.assertEqual(len(catalogue['channels']), 2)
+            self.assertEqual([c['frequency_hz'] for c in catalogue['channels']], [146520000, 446000000])
+            self.assertTrue(all(c['status_packets'] > 0 for c in catalogue['channels']))
             ids = [c['id'] for c in catalogue['channels']]
             for _ in ids:
                 peer.addTransceiver('audio', direction='recvonly')

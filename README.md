@@ -65,7 +65,8 @@ The gateway browses `_opus._udp.local.` via mDNS, reads the SRV port and the
 IPv4 multicast addresses of its target, and joins each advertised stream.
 ka9q-radio's Opus payload type 111 is the default. No unicast DNS queries or
 Avahi daemon/D-Bus access are needed. The service instance name labels the group;
-individual channels are still identified by SSRC until status metadata is added.
+individual channels retain their SSRC identity and display the tuned frequency
+from radiod status beacons.
 
 On Linux, automatic interface selection uses up, multicast-capable interfaces
 and excludes loopback; it skips ordinary WireGuard links. To choose the LAN
@@ -172,7 +173,7 @@ may also produce a Quiet indication.
 
 If the list stays empty, check the multicast interface, group, UDP port and RTP
 payload type. Numeric group addresses are required in this first version; it
-does not yet parse radiod status traffic. For discovery, check that mDNS on UDP
+reads radiod status on UDP 5006 by default. For discovery, check that mDNS on UDP
 5353 is allowed on the receiver LAN and look for `Discovered` messages in the log.
 If the list works but audio does not, inspect browser developer tools and gateway
 logs for ICE/DTLS errors, check HTTPS/browser audio permission, and check UDP rules.
@@ -194,8 +195,10 @@ They require local network socket permissions.
 
 - IPv4 multicast input only. One Opus packet per RTP payload, with a standard
   48 kHz Opus RTP timestamp clock. PCM, IQ, and other codecs are not supported.
-- No receiver-status metadata integration yet; labels are manual. Discovered
-  channels remain listed while quiet. Restart the gateway to clear the catalogue.
+- Tuned frequency is decoded from radiod status beacons. Mode and repeater
+  identification are not decoded yet; names/modes may still be configured
+  manually. Discovered channels remain listed while quiet. Restart the gateway
+  to clear the catalogue.
 - Maximum 256 discovered channels, 32 negotiated tracks per browser and 16
   simultaneous sessions by default, configurable via `max_channels`,
   `max_channels_per_session`, and `max_sessions`.
@@ -287,3 +290,65 @@ Directory paths should be conventional paths without whitespace or sed delimiter
 Keep machine-specific changes in a systemd drop-in. Do not mix local and Debian
 package ownership of the same files; a unit in `/etc/systemd/system` overrides a
 package's unit under `/usr/lib/systemd/system`.
+
+The channel-list sort control supports name, numeric frequency (unknown values
+last), group, activity (receiving first in ascending order), and numeric SSRC.
+Direction and optional Selected first grouping are saved in browser preferences.
+Sorting moves existing rows without changing their audio tracks or subscriptions.
+
+Local Makefile interpreter selection: an existing `$(VENV)/bin/python` is used
+when present; otherwise the launcher uses `/usr/bin/python3`, matching the Debian
+package. `APP_PYTHON` overrides this choice. Installation does not create a venv
+unless `install-deps` is explicitly run.
+
+## Channel frequency from radiod status (0.3.0)
+
+For every joined audio group, the gateway now also listens to **the same
+multicast address on UDP 5006**, radiod's default status-beacon port. This works
+for both manually configured and mDNS-discovered groups. It passively receives
+beacons; it does not send commands, retune receivers, or request status polls.
+
+Status TLVs `OUTPUT_SSRC` (18) and `RADIO_FREQUENCY` (33) associate the frequency
+with the existing group's source-IP/SSRC channel identity. When present, the
+output destination-socket TLV is checked against the audio group's address and
+port. Status from other sources/SSRCs remains separate. Beacons can create a
+quiet channel before its first audio packet. Partial updates preserve the last
+frequency; malformed messages are rejected before applying any fields.
+
+The page displays the frequency and uses its numeric Hz value for sorting.
+The five-second catalogue refresh picks up frequency changes without rebuilding
+WebRTC tracks. Beacon reception does not make a squelched channel look active:
+**Receiving** continues to mean recently received audio RTP.
+
+`/api/channels` exposes `frequency_hz`, a formatted `frequency`, `status_packets`
+and `status_age` per channel, with aggregate `status_packets` and
+`invalid_status_packets` for diagnostics. A missing `frequency_hz` is JSON null.
+Live metadata supersedes a manually configured frequency; the configuration
+provides a fallback before the first beacon. This version does not persist
+received frequency across gateway restarts or infer it from the SSRC.
+
+For nonstandard installations, set top-level `"status_port": 5006` to a different
+port; individual manual groups may override `status_port`. Audio and status ports
+must differ. Multiple audio endpoints sharing a status endpoint share its socket;
+the listener is closed after the last associated audio endpoint leaves.
+
+Upgrade by extracting the source update, then running:
+
+```bash
+sudo make install-app
+sudo systemctl restart web-monitor
+```
+
+No dependency changes. The corrected Makefile uses an existing private venv or
+falls back to system Python; an explicit `APP_PYTHON` override is still supported.
+Allow UDP **5006 on the receiver LAN**, in addition to the audio port and mDNS.
+This does not require exposing status UDP to Internet clients. Frequency appears
+when the next channel status beacon arrives; a silent receiver that sends no
+beacon will remain unidentified until it does.
+
+Protocol reference: ka9q-radio `src/status.h`, `src/status.c`, `src/radio_status.c`
+and `monitor`'s status listener in `src/monitor.c`. Tests exercise compressed
+numbers, extended/unknown TLVs, truncated/invalid values, metadata association,
+retuning, actual multicast beacons, shared-socket cleanup, JSON frequency
+reporting, and unchanged WebRTC audio forwarding. Actual receivers remain the
+next live test.

@@ -107,6 +107,7 @@ class MdnsTests(unittest.IsolatedAsyncioTestCase):
                 await asyncio.sleep(.1)
             self.assertFalse(manager.dynamic, 'withdrawn service retained a membership')
             self.assertFalse(hub.sockets)
+            self.assertFalse(hub.status_sockets)
         finally:
             sender.close()
             await publisher.async_close()

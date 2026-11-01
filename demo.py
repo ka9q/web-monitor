@@ -27,13 +27,17 @@ async def generate(hub):
     for index in range(2):
         channel = hub._channel(group, '127.0.0.1', 1001 + index)
         channel.name = ['Test tone · 440 Hz', 'Test tone · 660 Hz'][index]
-        channel.frequency = ['440 Hz audio', '660 Hz audio'][index]
         channel.mode = 'Opus mono'
     samples = 0
     sequences = [0, 0]
     deadline = time.monotonic()
     while True:
         for index, codec in enumerate(codecs):
+            if samples % 48000 == 0:
+                # Exercise the real status decoder, including quiet channels.
+                status = (b'\0\x12\x04' + struct.pack('!I', 1001 + index) +
+                          b'\x21\x08' + struct.pack('!d', [146520000.0, 446000000.0][index]) + b'\0')
+                hub.ingest_status(group, status, '127.0.0.1')
             # Intermittent second channel simulates squelch; first is continuous.
             active = index == 0 or (samples // 48000) % 6 < 3
             wave = array.array('h', (int(3500 * math.sin(2 * math.pi * (440 + index * 220) * (samples + n) / 48000))

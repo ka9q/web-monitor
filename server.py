@@ -127,7 +127,8 @@ def create_app(config, demo=False):
             channels=sorted((c.describe() for c in hub.channels.values()), key=lambda c: (c['group'], c['name'])),
             ice_servers=config.get('ice_servers', []),
             max_channels=config.get('max_channels_per_session', 32),
-            invalid_packets=hub.invalid, ignored_packets=hub.ignored))
+            invalid_packets=hub.invalid, ignored_packets=hub.ignored,
+            status_packets=hub.status_packets, invalid_status_packets=hub.invalid_status))
 
     async def remove(key):
         session = sessions.pop(key, None)

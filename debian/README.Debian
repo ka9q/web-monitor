@@ -5,7 +5,7 @@ Build on Debian (intended initial target: trixie or later):
 
     sudo apt install build-essential debhelper dh-python python3-all
     dpkg-buildpackage -us -uc -b
-    sudo apt install ../web-monitor_0.2.0_all.deb
+    sudo apt install ../web-monitor_0.3.0_all.deb
 
 Runtime dependencies are resolved by apt. No pip install or virtual environment
 creation happens during package installation. Debian trixie supplies aiortc
@@ -64,3 +64,6 @@ for local development. Set the intended maintainer and license before release.
 The full Debian build and systemd service need validation on Linux; the source
 was initially developed on macOS. Tests require runtime dependencies and local
 UDP/HTTP permission; run python3 -m unittest -v explicitly on the build/test host.
+
+Frequency metadata also requires receiver-LAN input on UDP 5006 (same multicast
+addresses as audio). No additional dependency or service permission is needed.

@@ -3,6 +3,7 @@ import asyncio
 import dataclasses
 import hashlib
 import ipaddress
+import math
 import socket
 import struct
 import time
@@ -15,6 +16,72 @@ class AudioPacket:
     sequence: int
     ssrc: int
     payload_type: int
+
+
+@dataclasses.dataclass(frozen=True)
+class RadioStatus:
+    ssrc: int
+    frequency_hz: float | None
+    destination: tuple[str, int] | None
+
+
+def parse_status(data):
+    """Decode radiod STATUS + TLVs; see ka9q-radio src/status.{h,c}.
+
+    OUTPUT_SSRC=18, RADIO_FREQUENCY=33, OUTPUT_DATA_DEST_SOCKET=17.
+    Integers and IEEE double bit patterns are big-endian, with leading zero
+    bytes omitted. TLV lengths use the long form when their high bit is set.
+    Parse the whole message before returning so truncated data cannot update
+    just part of a channel's metadata. Commands are never accepted here.
+    """
+    if not data or data[0] != 0:
+        raise ValueError('not a radiod status packet')
+    pos = 1
+    ssrc = None
+    frequency = None
+    destination = None
+    while pos < len(data):
+        field = data[pos]
+        pos += 1
+        if field == 0:
+            return RadioStatus(ssrc or 0, frequency, destination)
+        if pos == len(data):
+            raise ValueError('missing TLV length')
+        size = data[pos]
+        pos += 1
+        if size & 128:
+            count = size & 127
+            if not 1 <= count <= 4 or pos + count > len(data):
+                raise ValueError('invalid extended TLV length')
+            size = int.from_bytes(data[pos:pos + count], 'big')
+            pos += count
+        if pos + size > len(data):
+            raise ValueError('truncated TLV value')
+        value = data[pos:pos + size]
+        pos += size
+        if field == 18:
+            if size > 4:
+                raise ValueError('invalid SSRC length')
+            ssrc = int.from_bytes(value, 'big')
+        elif field == 33:
+            if size > 8:
+                raise ValueError('invalid frequency length')
+            frequency = struct.unpack('!d', value.rjust(8, b'\0'))[0]
+            if not math.isfinite(frequency) or frequency < 0:
+                raise ValueError('invalid channel frequency')
+        elif field == 17 and size == 6:
+            destination = (socket.inet_ntoa(value[:4]), int.from_bytes(value[4:], 'big'))
+    raise ValueError('missing status end marker')
+
+
+def format_frequency(hz):
+    if hz >= 1e6:
+        value, suffix, places = hz / 1e6, 'MHz', 9
+    elif hz >= 1e3:
+        value, suffix, places = hz / 1e3, 'kHz', 6
+    else:
+        value, suffix, places = hz, 'Hz', 3
+    return f'{value:.{places}f}'.rstrip('0').rstrip('.') + ' ' + suffix
 
 
 def parse_rtp(data):
@@ -53,6 +120,9 @@ class Channel:
         self.ssrc = ssrc
         self.name = metadata.get('name', f'{self.group_name} · SSRC {ssrc}')
         self.frequency = metadata.get('frequency', '')
+        self.frequency_hz = self.frequency if isinstance(self.frequency, (int, float)) else None
+        self.status_seen = 0
+        self.status_packets = 0
         self.mode = metadata.get('mode', '')
         self.last_seen = 0
         self.packets = 0
@@ -84,6 +154,8 @@ class Channel:
     def describe(self):
         age = time.monotonic() - self.last_seen if self.last_seen else None
         return dict(id=self.id, name=self.name, frequency=self.frequency, mode=self.mode,
+                    frequency_hz=self.frequency_hz, status_packets=self.status_packets,
+                    status_age=round(time.monotonic() - self.status_seen, 1) if self.status_seen else None,
                     group=self.group_name, source=self.source, ssrc=self.ssrc,
                     age=round(age, 1) if age is not None else None,
                     active=age is not None and age < 2, packets=self.packets,
@@ -95,6 +167,10 @@ class Hub:
         self.config = config
         self.channels = {}
         self.sockets = {}
+        self.status_sockets = {}
+        self.groups = {}
+        self.status_packets = 0
+        self.invalid_status = 0
         self.invalid = 0
         self.ignored = 0
         self.max_channels = config.get('max_channels', 256)
@@ -135,9 +211,37 @@ class Hub:
     def by_id(self):
         return {channel.id: channel for channel in self.channels.values()}
 
+    def ingest_status(self, group, data, source):
+        # Commands can be present on the status port: ignore, never execute them.
+        if not data or data[0] != 0:
+            return
+        try:
+            status = parse_status(data)
+        except ValueError:
+            self.invalid_status += 1
+            return
+        if not status.ssrc:
+            return  # Front-end-only beacon, not a channel.
+        if status.destination and status.destination != (group.get('address'), group.get('port')):
+            return
+        self.status_packets += 1
+        channel = self.channels.get((group['id'], source, status.ssrc))
+        if channel is None and status.frequency_hz is not None:
+            channel = self._channel(group, source, status.ssrc)
+        if channel:
+            channel.status_seen = time.monotonic()
+            channel.status_packets += 1
+            if status.frequency_hz is not None:
+                channel.frequency_hz = status.frequency_hz
+                channel.frequency = format_frequency(status.frequency_hz)
+
     @staticmethod
     def endpoint(group):
         return (group['address'], group['port'], group.get('interface', '0.0.0.0'))
+
+    def status_endpoint(self, group):
+        return (group['address'], group.get('status_port', self.config.get('status_port', 5006)),
+                group.get('interface', '0.0.0.0'))
 
     def start(self):
         self.loop = asyncio.get_running_loop()
@@ -149,31 +253,74 @@ class Hub:
             raise
 
     def add_group(self, group):
-        validate_config({'groups': [group]})
+        validate_config({'groups': [group], 'status_port': self.config.get('status_port', 5006)})
         endpoint = self.endpoint(group)
         if endpoint in self.sockets:
             return
+        status_endpoint = self.status_endpoint(group)
+        if status_endpoint[1] == group['port']:
+            raise ValueError('audio and status ports must differ')
+        sock = self._socket(endpoint)
+        try:
+            if status_endpoint not in self.status_sockets:
+                status_socket = self._socket(status_endpoint)
+                try:
+                    self.loop.add_reader(status_socket.fileno(), self._read_status, status_socket, status_endpoint)
+                except Exception:
+                    status_socket.close()
+                    raise
+                self.status_sockets[status_endpoint] = status_socket
+            self.loop.add_reader(sock.fileno(), self._read, sock, group)
+            self.sockets[endpoint] = sock
+            self.groups[endpoint] = group
+        except Exception:
+            sock.close()
+            self._release_status(status_endpoint)
+            raise
+
+    def _socket(self, endpoint):
+        address, port, interface = endpoint
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         try:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024)
-            sock.bind((group['address'], group['port']))
-            membership = socket.inet_aton(group['address']) + socket.inet_aton(group.get('interface', '0.0.0.0'))
+            sock.bind((address, port))
+            membership = socket.inet_aton(address) + socket.inet_aton(interface)
             sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership)
             if hasattr(socket, 'IP_MULTICAST_ALL'):
                 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_ALL, 0)
             sock.setblocking(False)
-            self.loop.add_reader(sock.fileno(), self._read, sock, group)
-            self.sockets[endpoint] = sock
+            return sock
         except Exception:
             sock.close()
             raise
+
+    def _release_status(self, endpoint):
+        if any(self.status_endpoint(group) == endpoint for group in self.groups.values()):
+            return
+        sock = self.status_sockets.pop(endpoint, None)
+        if sock:
+            self.loop.remove_reader(sock.fileno())
+            sock.close()
 
     def remove_group(self, endpoint):
         sock = self.sockets.pop(endpoint, None)
         if sock:
             self.loop.remove_reader(sock.fileno())
             sock.close()  # Closing the socket drops its multicast memberships.
+        group = self.groups.pop(endpoint, None)
+        if group:
+            self._release_status(self.status_endpoint(group))
+
+    def _read_status(self, sock, endpoint):
+        for _ in range(256):
+            try:
+                data, source = sock.recvfrom(65535)
+            except BlockingIOError:
+                break
+            for group in self.groups.values():
+                if self.status_endpoint(group) == endpoint:
+                    self.ingest_status(group, data, source[0])
 
     def _read(self, sock, group):
         # Limit each callback so a busy receiver cannot starve HTTP / ICE.
@@ -190,6 +337,9 @@ class Hub:
 
 
 def validate_config(config):
+    status_port = config.get('status_port', 5006)
+    if not isinstance(status_port, int) or not 1 <= status_port <= 65535:
+        raise ValueError('invalid status UDP port')
     ids = set()
     endpoints = set()
     for group in config.get('groups', []):
@@ -202,6 +352,9 @@ def validate_config(config):
         ipaddress.IPv4Address(group.get('interface', '0.0.0.0'))
         if not 1 <= group['port'] <= 65535:
             raise ValueError('invalid multicast UDP port')
+        port = group.get('status_port', status_port)
+        if not isinstance(port, int) or not 1 <= port <= 65535 or port == group['port']:
+            raise ValueError('status port must be valid and different from audio port')
         endpoint = (group['address'], group['port'], group.get('interface', '0.0.0.0'))
         if endpoint in endpoints:
             raise ValueError('duplicate multicast endpoint')
