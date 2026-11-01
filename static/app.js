@@ -40,7 +40,8 @@ function render() {
       const checkbox = row.querySelector('[type=checkbox]');
       checkbox.addEventListener('change', () => {
         checkbox.checked ? selected.add(channel.id) : selected.delete(channel.id);
-        save(); render(); syncSelection();
+        save(); render();
+        if(checkbox.checked) startAudio(false); else syncSelection();
       });
       const volume = row.querySelector('.volume input');
       volume.setAttribute('aria-label', `Volume for ${channel.name}`);
@@ -64,6 +65,9 @@ function render() {
     activity.textContent = channel.active ? 'Receiving' : 'Quiet';
     activity.classList.toggle('live', channel.active);
   }
+  $('connect').hidden = !enabled && chosen().length === 0;
+  $('connect').textContent = enabled ? 'Reconnect audio' : 'Start selected audio';
+  $('stop').disabled = !enabled;
   $('count').textContent = catalogue.length;
   $('empty').hidden = catalogue.length > 0;
   $('summary').textContent = `${chosen().length} selected · ${active ? 'WebRTC ' + active.pc.connectionState : 'not connected'}`;
@@ -134,19 +138,22 @@ async function connect() {
     if(enabled && active && chosen().some(id => !active.ids.includes(id))) scheduleReconnect();
   }
 }
-$('connect').addEventListener('click', async () => {
+async function startAudio(reconnect = false) {
   try {
     if(!window.RTCPeerConnection || !window.AudioContext) throw new Error('This browser needs WebRTC and Web Audio support. Use HTTPS or localhost.');
+    // Called directly by a click/change handler to satisfy browser autoplay rules.
     if(!context) { context = new AudioContext(); master = context.createGain(); master.connect(context.destination); updateMaster(); }
     await context.resume();
-    enabled = true; $('stop').disabled = false; $('connect').textContent = 'Reconnect audio';
-    clearTimeout(retry); await connect();
+    enabled = true; render();
+    clearTimeout(retry);
+    if(reconnect || !active) await connect(); else await syncSelection();
   } catch(error) { status(error.message, true); }
-});
+}
+$('connect').addEventListener('click', () => startAudio(true));
 $('stop').addEventListener('click', async () => {
   enabled = false; revision++; clearTimeout(retry);
   const old = active; active = null; await release(old);
-  $('stop').disabled = true; $('connect').textContent = 'Enable audio'; status('Disconnected. Selections are saved.'); render();
+  $('stop').disabled = true; status('Disconnected. Selections are saved.'); render();
 });
 $('master').addEventListener('input', updateMaster);
 $('mute').addEventListener('change', updateMaster);
@@ -157,7 +164,7 @@ async function refresh() {
     $('title').textContent = data.title; document.title = data.title;
     render();
     if(enabled && !active && !connecting) connect();
-    else if(!enabled) status(catalogue.length ? 'Choose channels, then enable audio.' : 'Waiting for Opus streams in the configured groups.');
+    else if(!enabled) status(catalogue.length ? (chosen().length ? 'Saved selections restored. Click Start selected audio, or select another channel, to listen.' : 'Select a channel to start listening.') : 'Waiting for Opus streams in the configured groups.');
   } catch(error) { status(`Gateway unavailable: ${error.message}`, true); }
 }
 setInterval(refresh, 5000);
