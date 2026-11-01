@@ -92,7 +92,8 @@ not need to cross the Internet; WebRTC handles delivery to the browser.
 Open **http://localhost:8080/** on the gateway computer and select a channel.
 For a browser on another machine, use trusted HTTPS, either with `--cert` and
 `--key` or through your existing HTTPS reverse proxy. Preserve its original Host
-header. The gateway defaults to `127.0.0.1:8080` and has no login layer.
+header. The supplied configurations listen on both `127.0.0.1:8080` and `[::1]:8080`
+and have no login layer. A `listen` list creates separate IPv4 and IPv6 listeners.
 
 ### Manual groups and labels
 
@@ -115,8 +116,18 @@ port-forward does not relay the WebRTC media.
 
 ## Network / NAT
 
-The default `ice_servers: []` uses direct host candidates, appropriate for the
-initial same-machine / LAN test. No external STUN service is contacted by default.
+The supplied configurations use Cloudflare's public STUN endpoint:
+
+```json
+"ice_servers": [{"urls": "stun:stun.cloudflare.com:3478"}]
+```
+
+STUN helps the browser and gateway gather numeric address candidates, including
+when browsers hide host addresses behind mDNS names. Audio is not relayed through
+the STUN server. Set `"ice_servers": []` for host-only ICE with no external STUN;
+that may fail across networks or with browser mDNS candidate obfuscation.
+These are config-file defaults; demo mode and configurations omitting
+`ice_servers` still use host-only ICE.
 WebRTC binds dynamic UDP ports, so firewall rules must permit the negotiated
 media path; opening TCP 8080 alone is insufficient.
 
@@ -233,3 +244,46 @@ Then restart `web-monitor`. No change to the hardened service is required.
 Discovery needs UDP 5353 on the LAN in addition to the RTP multicast groups.
 The new code was tested with actual local mDNS announcements, multicast input,
 withdrawal, and WebRTC; ka9q-radio advertisements still need a live field test.
+
+## Local installation with make
+
+From the source directory (Python 3.10+ and venv support required):
+
+```bash
+sudo make install-deps
+sudo make install
+sudo systemctl daemon-reload
+sudo systemctl enable --now web-monitor
+```
+
+Defaults are `/usr/local/bin/web-monitor`, private code/assets and a venv under
+`/usr/local/lib/web-monitor`, `/etc/radio/web-monitor.json`, and the local unit
+`/etc/systemd/system/web-monitor.service`. Existing configuration is preserved.
+The dependency target uses pip only inside that private venv. The ordinary
+`install` target does not download dependencies or change service state.
+
+To use Debian-provided dependencies instead of a venv:
+
+```bash
+sudo apt install python3-aiohttp python3-aiortc python3-av python3-zeroconf python3-ifaddr
+sudo make install APP_PYTHON=/usr/bin/python3
+```
+
+For source/UI updates with the existing local virtual environment:
+
+```bash
+sudo make install-app
+sudo systemctl restart web-monitor
+```
+
+If using system Python, pass `APP_PYTHON=/usr/bin/python3` on `install-app` too.
+Run `install-deps` again when requirements change if using the private venv.
+Use `make install DESTDIR=/some/staging/tree` to stage an installation; embedded
+paths refer to the target system, not the staging tree. Prefix/directory variables
+are overridable; the default keeps the existing flat Python-module/static layout.
+Directory paths should be conventional paths without whitespace or sed delimiters.
+
+`install-service` replaces the local unit with the current hardened template.
+Keep machine-specific changes in a systemd drop-in. Do not mix local and Debian
+package ownership of the same files; a unit in `/etc/systemd/system` overrides a
+package's unit under `/usr/lib/systemd/system`.
