@@ -1,0 +1,5 @@
+tar-ignore = .venv
+tar-ignore = __pycache__
+tar-ignore = *.pyc
+tar-ignore = config.json
+tar-ignore = *.pem

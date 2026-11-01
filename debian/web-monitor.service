@@ -1,0 +1,59 @@
+[Unit]
+Description=Multicast Opus to WebRTC audio monitor
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/usr/local/lib/web-monitor
+
+# systemd reads the root-owned config and gives this unit a private read-only copy.
+LoadCredential=web-monitor.json:/etc/radio/web-monitor.json
+ExecStart=/usr/local/bin/web-monitor --config %d/web-monitor.json
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+LimitCORE=0
+
+# No capabilities, privilege escalation, or writable application/system files.
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+RemoveIPC=yes
+KeyringMode=private
+
+# Interface enumeration (getifaddrs / ICE) may require AF_NETLINK on Linux.
+# UDP sockets and the host network must remain available for multicast and ICE.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Optional additional restriction: test with your Python/native-library build.
+# MemoryDenyWriteExecute=yes
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

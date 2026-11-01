@@ -1,0 +1,7 @@
+web-monitor (0.1.0) unstable; urgency=medium
+
+  * Initial local package with multicast Opus forwarding, WebRTC browser mixer,
+    stereo pan, and a restricted systemd service.
+  * Preserve the local /usr/local layout and /etc/radio/web-monitor.json.
+
+ -- Web monitor maintainers <web-monitor@localhost>  Sat, 31 Oct 2026 21:30:00 -0700

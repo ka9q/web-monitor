@@ -216,3 +216,12 @@ They require local network socket permissions.
 Selecting a channel provides the browser gesture needed to start audio; there is
 no separate Enable audio step. After a page reload, saved selections do not
 autoplay: click **Start selected audio** or select another channel.
+
+## Local Debian package
+
+A `debian/` directory now provides a native `web-monitor` package. See
+`debian/README.Debian` for build instructions, dependency compatibility notes,
+and migration from the manually installed service. It retains this installation's
+`/usr/local` convention and uses `/etc/radio/web-monitor.json`. Unlike the manual
+virtual-environment installation, the package uses Debian Python dependencies.
+The `/usr/local` layout is deliberately for local use, not Debian archive policy.

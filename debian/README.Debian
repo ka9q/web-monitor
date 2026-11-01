@@ -1,0 +1,64 @@
+web-monitor local Debian package
+===============================
+
+Build on Debian (intended initial target: trixie or later):
+
+    sudo apt install build-essential debhelper dh-python python3-all
+    dpkg-buildpackage -us -uc -b
+    sudo apt install ../web-monitor_0.1.0_all.deb
+
+Runtime dependencies are resolved by apt. No pip install or virtual environment
+creation happens during package installation. Debian trixie supplies aiortc
+1.11; the prototype was developed and transport-tested with aiortc 1.15. The
+1.11 minimum uses the same API, but that dependency combination needs a live
+compatibility test on the target. Older releases may need dependency backports.
+
+The package installs:
+
+    /usr/local/bin/web-monitor                 launcher using /usr/bin/python3
+    /usr/local/lib/web-monitor/                private Python modules
+    /usr/local/share/web-monitor/static/       browser assets
+    /etc/radio/web-monitor.json                dpkg-managed conffile
+    /usr/lib/systemd/system/web-monitor.service
+    /usr/share/doc/web-monitor/                documentation
+
+The static/ symlink beside server.py preserves the source checkout's layout.
+The code, assets, and configuration require no daemon write permission.
+Systemd loads configuration through LoadCredential into a private read-only file.
+
+This administrator-requested /usr/local layout is a deliberate Debian Policy
+9.1.2 exception. debian/rules overrides dh_usrlocal; Lintian will flag the
+layout. Do not submit this layout to the Debian archive unchanged. The unit and
+Debian documentation still use their ordinary package-managed system locations.
+
+Configuration is initially empty and localhost-only. Add actual multicast group
+addresses, interface IPv4 addresses, ports and Opus payload types using
+config.example.json from the source as a reference. dpkg preserves local edits
+on upgrade; package installation must not silently replace an existing config.
+
+Before enabling the packaged unit, remove or relocate any old LOCAL unit at
+/etc/systemd/system/web-monitor.service: it takes precedence over the packaged
+unit. Inspect it first and retain intended local changes in a drop-in. An old
+local unit may still invoke a .venv instead of the packaged system interpreter.
+
+Then:
+
+    sudo systemctl daemon-reload
+    sudo systemd-analyze verify /usr/lib/systemd/system/web-monitor.service
+    sudo systemctl reset-failed web-monitor
+    sudo systemctl enable --now web-monitor
+
+The package does not enable or start the service on install. Its upgrade scripts
+may stop an already running service; restart it manually after upgrading:
+
+    sudo systemctl restart web-monitor
+
+Configuration under /etc is retained on removal and removed on purge, according
+to normal dpkg conffile semantics. The shared /etc/radio directory is not purged
+recursively. No maintainer scripts delete your radio configuration directory.
+
+The current maintainer identity and copyright/license metadata are placeholders
+for local development. Set the intended maintainer and license before release.
+The full Debian build and systemd service need validation on Linux; the source
+was initially developed on macOS. Tests require runtime dependencies and local
+UDP/HTTP permission; run python3 -m unittest -v explicitly on the build/test host.

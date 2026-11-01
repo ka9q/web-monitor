@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: web-monitor
+
+Files: *
+Copyright: 2026, web-monitor contributors
+License: unspecified
+ No distribution license has been selected for this initial local prototype.
+ Choose the intended license and update this file before publishing the source
+ or submitting the package to a public archive.

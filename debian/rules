@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with python3
+
+# Flat, private Python application: no setup.py, build step, or network access.
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+override_dh_auto_install:
+	install -D -m 0755 debian/web-monitor.launcher debian/web-monitor/usr/local/bin/web-monitor
+	install -D -m 0644 debian/web-monitor.config.json debian/web-monitor/etc/radio/web-monitor.json
+
+# Intentional for this administrator's local package, not Debian archive policy.
+# dh_usrlocal otherwise rejects packaged files in /usr/local.
+override_dh_usrlocal:
+
+# Neither enable nor start a newly installed receiver service automatically.
+# --no-restart-after-upgrade uses stop-before-upgrade semantics for an already
+# running service; --no-start prevents an automatic subsequent start.
+override_dh_installsystemd:
+	dh_installsystemd --no-enable --no-start --no-restart-after-upgrade
+
+# Private flat modules have no useful public import dependency information.
+# Avoid bytecode writes; the launcher runs Python with -B.
+override_dh_python3:
+	dh_python3 --no-guessing-versions --no-compile /usr/local/lib/web-monitor

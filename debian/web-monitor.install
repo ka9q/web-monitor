@@ -1,0 +1,2 @@
+server.py core.py demo.py usr/local/lib/web-monitor/
+static/* usr/local/share/web-monitor/static/

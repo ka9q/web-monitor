@@ -1,0 +1,17 @@
+Source: web-monitor
+Section: hamradio
+Priority: optional
+Maintainer: Web monitor maintainers <web-monitor@localhost>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-all
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+
+Package: web-monitor
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3 (>= 3.10), python3-aiohttp (>= 3.9), python3-aiortc (>= 1.11), python3-av (>= 14), systemd (>= 247)
+Description: browser listener for multicast Opus radio channels
+ Receives existing Opus/RTP multicast streams and forwards selected channels
+ to web browsers over WebRTC without transcoding. Includes independent volume
+ and stereo pan, browser-side mixing, and a restricted systemd service.
+ .
+ This local package deliberately installs its application files in /usr/local.
