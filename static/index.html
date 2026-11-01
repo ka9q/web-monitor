@@ -15,7 +15,7 @@
 <label><input id="mute" type="checkbox"> Mute</label>
 </section>
 <p id="status" role="status">Discovering channels…</p>
-<section aria-label="Available audio channels"><div class="list-head"><h2>Channels <span id="count">0</span></h2><span>Selections are remembered on this browser</span></div><div id="channels"></div><p id="empty">Waiting for Opus streams in the configured multicast groups.</p></section>
+<section aria-label="Available audio channels"><div class="list-head"><h2>Channels <span id="count">0</span></h2><div class="sort-controls"><label>Sort <select id="sort"><option value="name">Channel name</option><option value="frequency">Frequency</option><option value="group">Multicast group</option><option value="activity">Activity</option><option value="ssrc">SSRC</option></select></label><button id="sort-direction" class="secondary" aria-label="Reverse sort direction">Ascending ↑</button><label><input id="selected-first" type="checkbox"> Selected first</label></div></div><div id="channels"></div><p id="empty">Waiting for Opus streams in the configured multicast groups.</p></section>
 <footer><span id="summary">No audio connection</span><span>Only selected channels are forwarded. Mute keeps the subscription.</span></footer>
 </main>
 <template id="channel-template"><article class="channel"><label class="choose"><input type="checkbox"><span><strong class="name"></strong><span class="details"></span></span></label><span class="activity"></span><label class="volume">Volume <input type="range" min="0" max="1" step="0.01" value="0.8"></label><label class="pan">Pan <input type="range" min="-1" max="1" step="0.01" value="0" title="Left / center / right. Double-click to center."><output>Center</output></label></article></template>

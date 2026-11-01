@@ -9,8 +9,40 @@ const pans = saved.pans && typeof saved.pans === 'object' ? saved.pans : {};
 let catalogue = [], iceServers = [], maxChannels = 32;
 let context, master, active, connecting = false, enabled = false, revision = 0, retry;
 const rows = new Map();
+const sortKeys = ['name', 'frequency', 'group', 'activity', 'ssrc'];
+let sortKey = sortKeys.includes(saved.sortKey) ? saved.sortKey : 'name';
+let descending = saved.descending === true;
+let selectedFirst = saved.selectedFirst === true;
+const collator = new Intl.Collator(undefined, {numeric:true, sensitivity:'base'});
+function frequencyHz(value) {
+  if(typeof value === 'number') return Number.isFinite(value) && value > 0 ? value : null;
+  const match = String(value ?? '').trim().match(/^(\d+(?:\.\d+)?)\s*(GHz|MHz|kHz|Hz)?$/i);
+  if(!match) return null;
+  return Number(match[1]) * ({ghz:1e9, mhz:1e6, khz:1e3, hz:1}[(match[2] || 'Hz').toLowerCase()]);
+}
+function sortedChannels() {
+  const text = (a, b) => collator.compare(String(a ?? ''), String(b ?? ''));
+  return [...catalogue].sort((a, b) => {
+    if(selectedFirst && selected.has(a.id) !== selected.has(b.id)) return selected.has(a.id) ? -1 : 1;
+    let result = 0;
+    if(sortKey === 'frequency') {
+      const left = frequencyHz(a.frequency), right = frequencyHz(b.frequency);
+      if((left === null) !== (right === null)) return left === null ? 1 : -1;
+      result = left === null ? 0 : left - right;
+    } else if(sortKey === 'activity') result = Number(!a.active) - Number(!b.active);
+    else if(sortKey === 'ssrc') result = a.ssrc - b.ssrc;
+    else result = text(a[sortKey], b[sortKey]);
+    // Stable tie-breaks prevent rows jumping as the catalogue is refreshed.
+    return (descending ? -result : result) || text(a.name, b.name) || text(a.group, b.group) || text(a.id, b.id);
+  });
+}
+function updateSortControls() {
+  $('sort').value = sortKey;
+  $('sort-direction').textContent = descending ? 'Descending ↓' : 'Ascending ↑';
+  $('selected-first').checked = selectedFirst;
+}
 function status(text, error = false) { $('status').textContent = text; $('status').classList.toggle('error', error); }
-function save() { try { localStorage.setItem('web-monitor-v1', JSON.stringify({selected:[...selected], volumes, pans})); } catch (_) {} }
+function save() { try { localStorage.setItem('web-monitor-v1', JSON.stringify({selected:[...selected], volumes, pans, sortKey, descending, selectedFirst})); } catch (_) {} }
 function gainFor(id) { const v = Number(volumes[id] ?? .8); return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : .8; }
 function panFor(id) { const p = Number(pans[id] ?? 0); return Number.isFinite(p) ? Math.max(-1, Math.min(1, p)) : 0; }
 function panLabel(value) { return Math.abs(value) < .005 ? 'Center' : `${Math.round(Math.abs(value) * 100)}% ${value < 0 ? 'left' : 'right'}`; }
@@ -65,6 +97,12 @@ function render() {
     activity.textContent = channel.active ? 'Receiving' : 'Quiet';
     activity.classList.toggle('live', channel.active);
   }
+  const focused = document.activeElement;
+  sortedChannels().forEach((channel, index) => {
+    const row = rows.get(channel.id);
+    if($('channels').children[index] !== row) $('channels').insertBefore(row, $('channels').children[index] || null);
+  });
+  if(focused && document.contains(focused) && document.activeElement !== focused) focused.focus({preventScroll:true});
   $('connect').hidden = !enabled && chosen().length === 0;
   $('connect').textContent = enabled ? 'Reconnect audio' : 'Start selected audio';
   $('stop').disabled = !enabled;
@@ -155,6 +193,10 @@ $('stop').addEventListener('click', async () => {
   const old = active; active = null; await release(old);
   $('stop').disabled = true; status('Disconnected. Selections are saved.'); render();
 });
+$('sort').addEventListener('change', () => { sortKey = $('sort').value; save(); render(); });
+$('sort-direction').addEventListener('click', () => { descending = !descending; updateSortControls(); save(); render(); });
+$('selected-first').addEventListener('change', () => { selectedFirst = $('selected-first').checked; save(); render(); });
+updateSortControls();
 $('master').addEventListener('input', updateMaster);
 $('mute').addEventListener('change', updateMaster);
 async function refresh() {
