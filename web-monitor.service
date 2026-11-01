@@ -8,11 +8,11 @@ StartLimitBurst=5
 [Service]
 Type=simple
 DynamicUser=yes
-WorkingDirectory=/opt/web-monitor
+WorkingDirectory=/usr/local/lib/web-monitor
 
 # systemd reads the root-owned config and gives this unit a private read-only copy.
-LoadCredential=config.json:/etc/web-monitor/config.json
-ExecStart=/opt/web-monitor/.venv/bin/python -B -u -s /opt/web-monitor/server.py --config %d/config.json
+LoadCredential=web-monitor.json:/etc/radio/web-monitor.json
+ExecStart=/usr/local/lib/web-monitor/.venv/bin/python -B -u -s /usr/local/lib/web-monitor/server.py --config %d/web-monitor.json
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=20
