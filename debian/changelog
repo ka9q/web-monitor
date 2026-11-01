@@ -1,3 +1,12 @@
+web-monitor (0.4.0) unstable; urgency=medium
+
+  * Age out channels after configurable audio/status inactivity (300 seconds
+    by default); retain saved browser settings when streams return.
+  * Reclaim idle catalogue entries and reuse channel objects still referenced
+    by WebRTC tracks to support returning selected streams.
+
+ -- Web monitor maintainers <web-monitor@localhost>  Sun, 01 Nov 2026 12:30:00 -0800
+
 web-monitor (0.3.0) unstable; urgency=medium
 
   * Receive radiod status beacons on each audio multicast group, port 5006.

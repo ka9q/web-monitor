@@ -5,7 +5,7 @@ Build on Debian (intended initial target: trixie or later):
 
     sudo apt install build-essential debhelper dh-python python3-all
     dpkg-buildpackage -us -uc -b
-    sudo apt install ../web-monitor_0.3.0_all.deb
+    sudo apt install ../web-monitor_0.4.0_all.deb
 
 Runtime dependencies are resolved by apt. No pip install or virtual environment
 creation happens during package installation. Debian trixie supplies aiortc

@@ -123,6 +123,7 @@ def create_app(config, demo=False):
         return web.FileResponse(ROOT / 'static' / 'index.html')
 
     async def catalogue(request):
+        hub.prune_idle()
         return web.json_response(dict(title=config.get('title', 'Radio monitor'),
             channels=sorted((c.describe() for c in hub.channels.values()), key=lambda c: (c['group'], c['name'])),
             ice_servers=config.get('ice_servers', []),
@@ -201,6 +202,7 @@ def create_app(config, demo=False):
     async def reap():
         while True:
             await asyncio.sleep(15)
+            hub.prune_idle()
             for key, session in list(sessions.items()):
                 if time.monotonic() - session.touched > 90:
                     await remove(key)

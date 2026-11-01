@@ -202,10 +202,12 @@ $('mute').addEventListener('change', updateMaster);
 async function refresh() {
   try {
     const data = await api('/api/channels');
+    const previousIds = catalogue.map(c => c.id).join(',');
     catalogue = data.channels; iceServers = data.ice_servers; maxChannels = data.max_channels;
     $('title').textContent = data.title; document.title = data.title;
     render();
     if(enabled && !active && !connecting) connect();
+    else if(enabled && active && !connecting && previousIds !== catalogue.map(c => c.id).join(',')) syncSelection();
     else if(!enabled) status(catalogue.length ? (chosen().length ? 'Saved selections restored. Click Start selected audio, or select another channel, to listen.' : 'Select a channel to start listening.') : 'Waiting for Opus streams in the configured groups.');
   } catch(error) { status(`Gateway unavailable: ${error.message}`, true); }
 }

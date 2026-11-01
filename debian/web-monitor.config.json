@@ -13,5 +13,6 @@
     }
   ],
   "discovery": true,
-  "groups": []
+  "groups": [],
+  "channel_timeout": 300
 }

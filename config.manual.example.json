@@ -31,5 +31,6 @@
         }
       ]
     }
-  ]
+  ],
+  "channel_timeout": 300
 }

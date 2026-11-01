@@ -11,5 +11,6 @@
     {
       "urls": "stun:stun.cloudflare.com:3478"
     }
-  ]
+  ],
+  "channel_timeout": 300
 }

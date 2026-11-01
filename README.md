@@ -82,7 +82,8 @@ explicitly, provide its local **IPv4 address**, not its interface name:
 ```
 
 SRV updates change memberships; goodbye/expiry removes them once no other service
-references the endpoint. Quiet channel rows remain listed to preserve selections.
+references the endpoint. Channels expire after the configured inactivity timeout;
+browser selections remain saved for streams that return.
 Only multicast IPv4 targets are accepted, with a default limit of 64 discovered
 memberships and 128 tracked service/interface pairs. Override those with
 `discovery.max_groups` and `discovery.max_services` if needed. mDNS discovery is
@@ -197,8 +198,8 @@ They require local network socket permissions.
   48 kHz Opus RTP timestamp clock. PCM, IQ, and other codecs are not supported.
 - Tuned frequency is decoded from radiod status beacons. Mode and repeater
   identification are not decoded yet; names/modes may still be configured
-  manually. Discovered channels remain listed while quiet. Restart the gateway
-  to clear the catalogue.
+  manually. Quiet channels remain listed while audio/status activity renews their
+  lifetime; inactive entries expire after five minutes by default.
 - Maximum 256 discovered channels, 32 negotiated tracks per browser and 16
   simultaneous sessions by default, configurable via `max_channels`,
   `max_channels_per_session`, and `max_sessions`.
@@ -352,3 +353,26 @@ numbers, extended/unknown TLVs, truncated/invalid values, metadata association,
 retuning, actual multicast beacons, shared-socket cleanup, JSON frequency
 reporting, and unchanged WebRTC audio forwarding. Actual receivers remain the
 next live test.
+
+## Idle channel aging (0.4.0)
+
+Channels disappear from the catalogue after **300 seconds without either an
+accepted audio RTP packet or a valid channel status beacon**. Configure the
+number of seconds with top-level `"channel_timeout": 300`; `0` disables aging.
+A channel that still sends status beacons stays listed even while squelched.
+Explicit configured channels also age out if they never receive packets; their
+initial timeout starts when they are created. Aging is checked every 15 seconds
+and on catalogue requests; the browser refreshes the list every five seconds.
+
+Expiration removes channel rows and reclaims catalogue capacity; it does not
+leave the multicast group, because the gateway must still receive returning
+streams. It also does not erase browser selections, volumes, or pan settings.
+When the same source/SSRC returns in the same group, its identity is stable and
+saved selections are reapplied on catalogue refresh. Existing WebRTC tracks can
+reuse a returning channel without being stranded on an expired channel object;
+otherwise normal connection setup applies. Channels with no remaining session
+references are released instead of being held in a permanent retired cache.
+
+Install the source update using `sudo make install-app`, restart the service,
+and reload the page for the returning-channel subscription update. No new
+Python dependencies or unit changes are required.

@@ -7,6 +7,7 @@ import math
 import socket
 import struct
 import time
+import weakref
 
 
 @dataclasses.dataclass(frozen=True)
@@ -123,6 +124,7 @@ class Channel:
         self.frequency_hz = self.frequency if isinstance(self.frequency, (int, float)) else None
         self.status_seen = 0
         self.status_packets = 0
+        self.created_at = time.monotonic()
         self.mode = metadata.get('mode', '')
         self.last_seen = 0
         self.packets = 0
@@ -166,6 +168,10 @@ class Hub:
     def __init__(self, config):
         self.config = config
         self.channels = {}
+        # Expired channels disappear from the catalogue, but existing WebRTC
+        # tracks may still reference them. Reuse those objects on return so a
+        # selected stream can resume without leaving senders on a dead object.
+        self.retired = weakref.WeakValueDictionary()
         self.sockets = {}
         self.status_sockets = {}
         self.groups = {}
@@ -189,11 +195,27 @@ class Hub:
         key = (group['id'], source, ssrc)
         if key not in self.channels:
             if len(self.channels) >= self.max_channels:
+                self.prune_idle()
+            if len(self.channels) >= self.max_channels:
                 return None
             metadata = self._definitions.get((group['id'], ssrc, source),
                        self._definitions.get((group['id'], ssrc, None)))
-            self.channels[key] = Channel(group, source, ssrc, metadata)
+            channel = self.retired.pop(key, None)
+            self.channels[key] = channel if channel is not None else Channel(group, source, ssrc, metadata)
         return self.channels[key]
+
+    def prune_idle(self, now=None):
+        timeout = self.config.get('channel_timeout', 300)
+        if timeout == 0:
+            return []
+        now = time.monotonic() if now is None else now
+        expired = []
+        for key, channel in list(self.channels.items()):
+            last_activity = max(channel.created_at, channel.last_seen, channel.status_seen)
+            if now - last_activity >= timeout:
+                expired.append(channel.id)
+                self.retired[key] = self.channels.pop(key)
+        return expired
 
     def ingest(self, group, data, source):
         try:
@@ -209,6 +231,7 @@ class Hub:
             channel.ingest(packet)
 
     def by_id(self):
+        self.prune_idle()
         return {channel.id: channel for channel in self.channels.values()}
 
     def ingest_status(self, group, data, source):
@@ -225,9 +248,7 @@ class Hub:
         if status.destination and status.destination != (group.get('address'), group.get('port')):
             return
         self.status_packets += 1
-        channel = self.channels.get((group['id'], source, status.ssrc))
-        if channel is None and status.frequency_hz is not None:
-            channel = self._channel(group, source, status.ssrc)
+        channel = self._channel(group, source, status.ssrc)
         if channel:
             channel.status_seen = time.monotonic()
             channel.status_packets += 1
@@ -337,6 +358,9 @@ class Hub:
 
 
 def validate_config(config):
+    timeout = config.get('channel_timeout', 300)
+    if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout < 0:
+        raise ValueError('channel_timeout must be a finite nonnegative number of seconds (0 disables aging)')
     status_port = config.get('status_port', 5006)
     if not isinstance(status_port, int) or not 1 <= status_port <= 65535:
         raise ValueError('invalid status UDP port')
