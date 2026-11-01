@@ -8,7 +8,9 @@ No receiver tuning controls and no dependency on ka9q-web.
 - Forwards the encoded Opus payloads unchanged through aiortc's encoded-packet
   path. WebRTC provides new RTP headers, DTLS-SRTP, ICE, and RTCP.
 - One WebRTC peer connection per browser. Each stream has its own audio track.
-  Browser Web Audio mixes tracks with individual and master volume controls.
+  Browser Web Audio mixes tracks with individual and master volume controls
+  and independent left/center/right stereo pan. Double-click a pan slider to
+  center it; pan positions are remembered and restored on reconnect.
 - Checkboxes control forwarding at the server. Unchecked tracks send no audio
   RTP. Muting or turning the volume down does **not** unsubscribe.
 - Bounded per-listener queues discard old audio instead of building latency.
@@ -36,7 +38,7 @@ no wheel, its installation may need FFmpeg development libraries and a compiler.
 ```
 
 Open **http://localhost:8080/** on that computer. Check one or both test channels
-and click **Enable audio**. The first is a continuous 440 Hz tone; the second is
+to start listening. Selecting a channel starts audio immediately. The first is a continuous 440 Hz tone; the second is
 660 Hz and alternates between three seconds of audio and three seconds of silence.
 The demo generates Opus and feeds the same RTP parser and forwarding pipeline,
 but does not join real multicast groups.
@@ -44,10 +46,12 @@ but does not join real multicast groups.
 ## Connect your receivers
 
 ```bash
-cp config.example.json config.json
+sudo install -d -m 0755 /etc/radio
+sudo install -m 0644 config.example.json /etc/radio/web-monitor.json
 ```
 
-Edit the example values before starting:
+The installed configuration is `/etc/radio/web-monitor.json`.
+Edit its example values before starting:
 
 - `address`: the numeric multicast address carrying **Opus audio**, not the
   receiver's status/control group.
@@ -94,14 +98,14 @@ labels, the page shows group name and SSRC. Example:
 Start the gateway:
 
 ```bash
-.venv/bin/python server.py --config config.json
+.venv/bin/python server.py --config /etc/radio/web-monitor.json
 ```
 
 Open **http://localhost:8080/**. If the gateway and browser are on different
 machines, use HTTPS with a certificate trusted by the browser:
 
 ```bash
-.venv/bin/python server.py --config config.json --listen 0.0.0.0 \
+.venv/bin/python server.py --config /etc/radio/web-monitor.json --listen 0.0.0.0 \
   --cert fullchain.pem --key privkey.pem
 ```
 
@@ -149,7 +153,7 @@ use bandwidth. Click **Disconnect** to close the WebRTC session.
 1. Start with one known Opus group and verify channels appear. The catalogue
    endpoint `/api/channels` includes received packet counts, source/SSRC,
    last-packet age, and rejected/ignored packet counts.
-2. Select a channel, enable audio, and verify the page says **WebRTC connected**.
+2. Select a channel and verify the page says **WebRTC connected**.
 3. Select another and verify both are audible, with independent volume controls.
 4. Uncheck one and verify its outbound audio stops while the other continues.
 5. Exercise squelch and a receiver restart. Audio should resume without replaying
@@ -208,3 +212,7 @@ They require local network socket permissions.
 - Encoded Opus packing: https://github.com/aiortc/aiortc/blob/main/src/aiortc/codecs/opus.py
 - WebRTC transports: https://www.rfc-editor.org/rfc/rfc8835.html
 - Opus RTP format: https://www.rfc-editor.org/rfc/rfc7587.html
+
+Selecting a channel provides the browser gesture needed to start audio; there is
+no separate Enable audio step. After a page reload, saved selections do not
+autoplay: click **Start selected audio** or select another channel.
