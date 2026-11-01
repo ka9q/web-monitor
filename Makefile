@@ -6,8 +6,9 @@ SYSCONFDIR ?= /etc/radio
 SYSTEMDUNITDIR ?= /etc/systemd/system
 VENV ?= $(LIBDIR)/.venv
 PYTHON ?= python3
-# Override with /usr/bin/python3 to use distro-managed dependencies instead.
-APP_PYTHON ?= $(VENV)/bin/python
+# Use an existing private venv; otherwise match the Debian system-Python setup.
+# An explicit APP_PYTHON always takes precedence.
+APP_PYTHON ?= $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,/usr/bin/python3)
 DESTDIR ?=
 INSTALL ?= install
 
@@ -21,7 +22,7 @@ help:
 	@printf '%s\n' \
 	  'Local install (defaults to /usr/local):' \
 	  '  sudo make install-deps   Create private venv and install dependencies' \
-	  '  sudo make install        Install code, assets, launcher, config and unit' \
+	  '  sudo make install        Install files; use existing venv or system Python' \
 	  '  sudo make install-app    Update code/assets/launcher only' \
 	  '  make test PYTHON=...     Run tests with a dependency-equipped Python' \
 	  '' \
