@@ -20,6 +20,12 @@ function frequencyHz(value) {
   if(!match) return null;
   return Number(match[1]) * ({ghz:1e9, mhz:1e6, khz:1e3, hz:1}[(match[2] || 'Hz').toLowerCase()]);
 }
+function channelTitle(channel) {
+  if(!channel.frequency) return channel.name;
+  const suffix = ` · SSRC ${channel.ssrc}`;
+  const name = channel.name.endsWith(suffix) ? channel.name.slice(0, -suffix.length) : channel.name;
+  return `${name} · ${channel.frequency}`;
+}
 function sortedChannels() {
   const text = (a, b) => collator.compare(String(a ?? ''), String(b ?? ''));
   return [...catalogue].sort((a, b) => {
@@ -31,9 +37,9 @@ function sortedChannels() {
       result = left === null ? 0 : left - right;
     } else if(sortKey === 'activity') result = Number(!a.active) - Number(!b.active);
     else if(sortKey === 'ssrc') result = a.ssrc - b.ssrc;
-    else result = text(a[sortKey], b[sortKey]);
+    else result = sortKey === 'name' ? text(channelTitle(a), channelTitle(b)) : text(a[sortKey], b[sortKey]);
     // Stable tie-breaks prevent rows jumping as the catalogue is refreshed.
-    return (descending ? -result : result) || text(a.name, b.name) || text(a.group, b.group) || text(a.id, b.id);
+    return (descending ? -result : result) || text(channelTitle(a), channelTitle(b)) || text(a.group, b.group) || text(a.id, b.id);
   });
 }
 function updateSortControls() {
@@ -88,8 +94,11 @@ function render() {
       pan.addEventListener('input', () => { pans[channel.id] = Number(pan.value); showPan(); setPan(channel.id); save(); });
       pan.addEventListener('dblclick', () => { pan.value = 0; pans[channel.id] = 0; showPan(); setPan(channel.id); save(); });
     }
-    row.querySelector('.name').textContent = channel.name;
-    row.querySelector('.details').textContent = [channel.frequency, channel.mode, channel.group, `${channel.source} / ${channel.ssrc}`].filter(Boolean).join(' · ');
+    const title = channelTitle(channel);
+    row.querySelector('.name').textContent = title;
+    row.querySelector('.volume input').setAttribute('aria-label', `Volume for ${title}`);
+    row.querySelector('.pan input').setAttribute('aria-label', `Pan for ${title}`);
+    row.querySelector('.details').textContent = [channel.mode, channel.group, `${channel.source} / ${channel.ssrc}`].filter(Boolean).join(' · ');
     const checkbox = row.querySelector('[type=checkbox]');
     checkbox.checked = selected.has(channel.id);
     row.classList.toggle('selected', checkbox.checked);
