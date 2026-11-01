@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Radio monitor</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/app.js" defer></script>
+</head>
+<body>
+<main>
+<header><div><p class="eyebrow">MULTICAST → WEBRTC</p><h1 id="title">Radio monitor</h1><p class="intro">Select channels to listen. Mix them independently.</p></div><span class="badge">OPUS · LIVE</span></header>
+<section class="toolbar" aria-label="Playback controls">
+<button id="connect">Enable audio</button><button id="stop" class="secondary" disabled>Disconnect</button>
+<label class="master">Master volume <input id="master" type="range" min="0" max="1" step="0.01" value="0.7"></label>
+<label><input id="mute" type="checkbox"> Mute</label>
+</section>
+<p id="status" role="status">Discovering channels…</p>
+<section aria-label="Available audio channels"><div class="list-head"><h2>Channels <span id="count">0</span></h2><span>Selections are remembered on this browser</span></div><div id="channels"></div><p id="empty">Waiting for Opus streams in the configured multicast groups.</p></section>
+<footer><span id="summary">No audio connection</span><span>Only selected channels are forwarded. Mute keeps the subscription.</span></footer>
+</main>
+<template id="channel-template"><article class="channel"><label class="choose"><input type="checkbox"><span><strong class="name"></strong><span class="details"></span></span></label><span class="activity"></span><label class="volume">Volume <input type="range" min="0" max="1" step="0.01" value="0.8"></label></article></template>
+</body>
+</html>
