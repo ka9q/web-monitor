@@ -5,12 +5,16 @@ try { saved = JSON.parse(localStorage.getItem('web-monitor-v1') || '{}'); } catc
 if (!saved || typeof saved !== 'object') saved = {};
 const selected = new Set(Array.isArray(saved.selected) ? saved.selected.filter(x => typeof x === 'string') : []);
 const volumes = saved.volumes && typeof saved.volumes === 'object' ? saved.volumes : {};
+const pans = saved.pans && typeof saved.pans === 'object' ? saved.pans : {};
 let catalogue = [], iceServers = [], maxChannels = 32;
 let context, master, active, connecting = false, enabled = false, revision = 0, retry;
 const rows = new Map();
 function status(text, error = false) { $('status').textContent = text; $('status').classList.toggle('error', error); }
-function save() { try { localStorage.setItem('web-monitor-v1', JSON.stringify({selected:[...selected], volumes})); } catch (_) {} }
+function save() { try { localStorage.setItem('web-monitor-v1', JSON.stringify({selected:[...selected], volumes, pans})); } catch (_) {} }
 function gainFor(id) { const v = Number(volumes[id] ?? .8); return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : .8; }
+function panFor(id) { const p = Number(pans[id] ?? 0); return Number.isFinite(p) ? Math.max(-1, Math.min(1, p)) : 0; }
+function panLabel(value) { return Math.abs(value) < .005 ? 'Center' : `${Math.round(Math.abs(value) * 100)}% ${value < 0 ? 'left' : 'right'}`; }
+function setPan(id) { const graph = active?.graphs.get(id); if(graph) graph.panner.pan.setTargetAtTime(panFor(id), context.currentTime, .015); }
 function updateMaster() { if(master) master.gain.value = $('mute').checked ? 0 : Number($('master').value); }
 function chosen(ids = catalogue.map(c => c.id)) { return ids.filter(id => selected.has(id)); }
 async function api(path, method = 'GET', body) {
@@ -21,7 +25,7 @@ async function api(path, method = 'GET', body) {
 async function release(session) {
   if(!session) return;
   session.pc.close();
-  for(const graph of session.graphs.values()) { graph.source.disconnect(); graph.gain.disconnect(); }
+  for(const graph of session.graphs.values()) { graph.source.disconnect(); graph.gain.disconnect(); graph.panner.disconnect(); }
   if(session.id) { try { await api(`/api/sessions/${session.id}`, 'DELETE'); } catch (_) {} }
 }
 function setVolume(id) { const graph = active?.graphs.get(id); if(graph) graph.gain.gain.value = gainFor(id); }
@@ -38,10 +42,18 @@ function render() {
         checkbox.checked ? selected.add(channel.id) : selected.delete(channel.id);
         save(); render(); syncSelection();
       });
-      const volume = row.querySelector('[type=range]');
+      const volume = row.querySelector('.volume input');
       volume.setAttribute('aria-label', `Volume for ${channel.name}`);
       volume.value = gainFor(channel.id);
       volume.addEventListener('input', () => { volumes[channel.id] = Number(volume.value); setVolume(channel.id); save(); });
+      const pan = row.querySelector('.pan input');
+      const readout = row.querySelector('.pan output');
+      pan.setAttribute('aria-label', `Pan for ${channel.name}`);
+      pan.value = panFor(channel.id);
+      function showPan() { const label = panLabel(Number(pan.value)); readout.textContent = label; pan.setAttribute('aria-valuetext', label); }
+      showPan();
+      pan.addEventListener('input', () => { pans[channel.id] = Number(pan.value); showPan(); setPan(channel.id); save(); });
+      pan.addEventListener('dblclick', () => { pan.value = 0; pans[channel.id] = 0; showPan(); setPan(channel.id); save(); });
     }
     row.querySelector('.name').textContent = channel.name;
     row.querySelector('.details').textContent = [channel.frequency, channel.mode, channel.group, `${channel.source} / ${channel.ssrc}`].filter(Boolean).join(' · ');
@@ -91,8 +103,9 @@ async function connect() {
     const id = ids[index];
     const source = context.createMediaStreamSource(new MediaStream([event.track]));
     const gain = context.createGain(); gain.gain.value = gainFor(id);
-    source.connect(gain).connect(master);
-    session.graphs.set(id, {source, gain});
+    const panner = context.createStereoPanner(); panner.pan.value = panFor(id);
+    source.connect(gain).connect(panner).connect(master);
+    session.graphs.set(id, {source, gain, panner});
   };
   try {
     await pc.setLocalDescription(await pc.createOffer());
