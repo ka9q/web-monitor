@@ -15,15 +15,32 @@ from aiohttp import web
 from aiortc import (MediaStreamTrack, RTCConfiguration, RTCIceServer,
                     RTCPeerConnection, RTCRtpSender, RTCSessionDescription)
 from av import Packet
+from aiortc.codecs.opus import OpusEncoder
 from core import Hub, validate_config
 from discovery import OpusDiscovery, SourceNames, discovery_options, source_name_options
 
 ROOT = pathlib.Path(__file__).resolve().parent
 LOG = logging.getLogger('web-monitor')
 TIME_BASE = fractions.Fraction(1, 48000)
-HUB = web.AppKey('hub', Hub)
-SESSIONS = web.AppKey('sessions', dict)
-SOURCE_NAMES = web.AppKey('source_names', SourceNames)
+# Ubuntu 22.04's aiohttp 3.8 predates AppKey.
+HUB = web.AppKey('hub', Hub) if hasattr(web, 'AppKey') else 'web_monitor.hub'
+SESSIONS = web.AppKey('sessions', dict) if hasattr(web, 'AppKey') else 'web_monitor.sessions'
+SOURCE_NAMES = web.AppKey('source_names', SourceNames) if hasattr(web, 'AppKey') else 'web_monitor.source_names'
+
+
+class _LegacyOpusPassthrough:
+    """aiortc 1.3 calls encode() even when recv() returns an encoded packet."""
+    def encode(self, packet, force_keyframe=False):
+        if not isinstance(packet, Packet) or packet.pts is None or packet.time_base is None:
+            raise TypeError('Opus passthrough requires a timestamped encoded packet')
+        return [bytes(packet)], int(packet.pts * packet.time_base * 48000)
+
+
+def configure_opus_passthrough(sender):
+    if not hasattr(OpusEncoder, 'pack'):
+        # No public encoded-packet API exists before aiortc 1.4. Keep this
+        # private-field compatibility hook confined to those older releases.
+        sender._RTCRtpSender__encoder = _LegacyOpusPassthrough()
 
 
 class OpusTrack(MediaStreamTrack):
@@ -184,6 +201,7 @@ def create_app(config, demo=False):
                 transceiver.setCodecPreferences(codecs)
                 transceiver.direction = 'sendonly'
                 transceiver.sender.replaceTrack(session.tracks[channel_id])
+                configure_opus_passthrough(transceiver.sender)
             await asyncio.wait_for(peer.setLocalDescription(await peer.createAnswer()), 20)
             return web.json_response(dict(id=key, type=peer.localDescription.type,
                                           sdp=peer.localDescription.sdp))
