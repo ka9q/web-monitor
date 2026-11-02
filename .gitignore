@@ -2,3 +2,6 @@
 __pycache__/
 config.json
 *.pem
+debian/*.debhelper
+debian/*.log
+*.~undo-tree~
