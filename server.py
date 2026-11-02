@@ -16,13 +16,14 @@ from aiortc import (MediaStreamTrack, RTCConfiguration, RTCIceServer,
                     RTCPeerConnection, RTCRtpSender, RTCSessionDescription)
 from av import Packet
 from core import Hub, validate_config
-from discovery import OpusDiscovery, discovery_options
+from discovery import OpusDiscovery, SourceNames, discovery_options, source_name_options
 
 ROOT = pathlib.Path(__file__).resolve().parent
 LOG = logging.getLogger('web-monitor')
 TIME_BASE = fractions.Fraction(1, 48000)
 HUB = web.AppKey('hub', Hub)
 SESSIONS = web.AppKey('sessions', dict)
+SOURCE_NAMES = web.AppKey('source_names', SourceNames)
 
 
 class OpusTrack(MediaStreamTrack):
@@ -104,11 +105,13 @@ async def same_origin(request, handler):
 def create_app(config, demo=False):
     validate_config(config)
     discovery_config = discovery_options(config)
+    names = SourceNames(source_name_options(config))
     app = web.Application(client_max_size=128 * 1024, middlewares=[same_origin])
     hub = Hub(config)
     sessions = {}
     app[HUB] = hub
     app[SESSIONS] = sessions
+    app[SOURCE_NAMES] = names
 
     async def json_object(request):
         try:
@@ -124,8 +127,13 @@ def create_app(config, demo=False):
 
     async def catalogue(request):
         hub.prune_idle()
+        channels = []
+        for channel in hub.channels.values():
+            entry = channel.describe()
+            entry['source_name'] = names.lookup(channel.source)
+            channels.append(entry)
         return web.json_response(dict(title=config.get('title', 'Radio monitor'),
-            channels=sorted((c.describe() for c in hub.channels.values()), key=lambda c: (c['group'], c['name'])),
+            channels=sorted(channels, key=lambda c: (c['group'], c['name'])),
             ice_servers=config.get('ice_servers', []),
             max_channels=config.get('max_channels_per_session', 32),
             invalid_packets=hub.invalid, ignored_packets=hub.ignored,
@@ -215,12 +223,16 @@ def create_app(config, demo=False):
             if discovery_config['enabled'] and not demo:
                 discovery = OpusDiscovery(hub, discovery_config)
                 await discovery.start()
+            if not demo:
+                await names.start(shared=discovery.resolvers if discovery else None,
+                                  interfaces=discovery_config.get('interfaces'))
             tasks.append(asyncio.create_task(reap()))
             if demo:
                 from demo import generate
                 tasks.append(asyncio.create_task(generate(hub)))
             yield
         finally:
+            await names.close()
             if discovery:
                 await discovery.close()
             hub.close()

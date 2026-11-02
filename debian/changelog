@@ -1,3 +1,11 @@
+web-monitor (0.5.0) unstable; urgency=medium
+
+  * Resolve source IPv4 hostnames on the server using direct mDNS PTR queries.
+  * Cache positive/negative results with bounded background lookups; retain
+    numeric source addresses and SSRCs alongside names in the browser.
+
+ -- Web monitor maintainers <web-monitor@localhost>  Sun, 01 Nov 2026 13:00:00 -0800
+
 web-monitor (0.4.0) unstable; urgency=medium
 
   * Age out channels after configurable audio/status inactivity (300 seconds

@@ -1,12 +1,15 @@
 """Discover multicast Opus services directly over mDNS, without unicast DNS."""
 import asyncio
+from collections import OrderedDict
 import ipaddress
 import logging
 import pathlib
 import sys
+import time
 
 import ifaddr
-from zeroconf import IPVersion, ServiceStateChange
+from zeroconf import (DNSOutgoing, DNSPointer, DNSQuestion, IPVersion,
+                      RecordUpdateListener, ServiceStateChange, current_time_millis)
 from zeroconf.asyncio import AsyncServiceBrowser, AsyncServiceInfo, AsyncZeroconf
 
 LOG = logging.getLogger('web-monitor.discovery')
@@ -185,3 +188,160 @@ class OpusDiscovery:
         self.dynamic.clear()
         self.memberships.clear()
         self.present.clear()
+
+
+# Reverse names are presentation metadata, never a stream identity or an
+# authorization decision. These are direct mDNS PTR queries, not NSS/DNS calls.
+
+def source_name_options(config):
+    value = config.get('source_names', True)
+    if isinstance(value, bool):
+        return {'enabled': value}
+    if not isinstance(value, dict):
+        raise ValueError('source_names must be a boolean or object')
+    options = dict(value)
+    options.setdefault('enabled', True)
+    if not isinstance(options['enabled'], bool):
+        raise ValueError('source_names.enabled must be true or false')
+    if 'interfaces' in options:
+        discovery_options({'discovery': {'interfaces': options['interfaces']}})
+    return options
+
+
+class _PointerListener(RecordUpdateListener):
+    def __init__(self, name, future):
+        self.name = name.lower()
+        self.future = future
+
+    def async_update_records(self, zc, now, records):
+        for update in records:
+            record = update.new
+            if (isinstance(record, DNSPointer) and record.name.lower() == self.name
+                    and not record.is_expired(now) and not self.future.done()):
+                self.future.set_result(record)
+
+
+class SourceNames:
+    """Bounded, nonblocking, positive/negative cache for source mDNS PTR names."""
+    def __init__(self, options):
+        self.options = options
+        self.cache = OrderedDict()
+        self.tasks = {}
+        self.resolvers = []
+        self.owned = []
+        self.running = False
+        self.max_entries = 512
+        self.max_pending = 4
+        self.negative_ttl = 60
+        self.max_ttl = 300
+        self.timeout = 2
+
+    async def start(self, shared=None, interfaces=None):
+        if not self.options.get('enabled', True):
+            return
+        if shared and 'interfaces' not in self.options:
+            self.resolvers = list(shared)
+            for resolver in self.resolvers:
+                await resolver.zeroconf.async_wait_for_start()
+        else:
+            addresses = self.options.get('interfaces', interfaces)
+            if addresses is None:
+                addresses = local_interfaces()
+            for address in addresses:
+                resolver = AsyncZeroconf(interfaces=[address], ip_version=IPVersion.V4Only)
+                self.owned.append(resolver)
+                self.resolvers.append(resolver)
+                await resolver.zeroconf.async_wait_for_start()
+        self.running = True
+
+    @staticmethod
+    def _name(record):
+        name = record.alias.rstrip('.')
+        if not name or len(name) > 253 or any(ord(c) < 32 or ord(c) == 127 for c in name):
+            return None
+        return name
+
+    def lookup(self, address):
+        if not self.running or not self.resolvers:
+            return None
+        try:
+            address = str(ipaddress.IPv4Address(address))
+        except ipaddress.AddressValueError:
+            return None
+        entry = self.cache.get(address)
+        if entry:
+            self.cache.move_to_end(address)
+            if entry[1] > time.monotonic():
+                return entry[0]
+        if address not in self.tasks and len(self.tasks) < self.max_pending:
+            if address not in self.cache:
+                if len(self.cache) >= self.max_entries:
+                    victim = next((key for key in self.cache if key not in self.tasks), None)
+                    if victim is None:
+                        return None
+                    self.cache.pop(victim)
+                self.cache[address] = (None, 0)
+            self.tasks[address] = asyncio.create_task(self._resolve(address))
+        return entry[0] if entry else None
+
+    async def _resolve(self, address):
+        name, ttl = None, self.negative_ttl
+        try:
+            record = await self._query(ipaddress.IPv4Address(address).reverse_pointer + '.')
+            if record:
+                name = self._name(record)
+                if name:
+                    ttl = max(1, min(self.max_ttl, record.get_remaining_ttl(current_time_millis())))
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+            LOG.debug('Source mDNS lookup failed for %s: %s', address, error)
+        finally:
+            self.tasks.pop(address, None)
+            if self.running:
+                self.cache[address] = (name, time.monotonic() + ttl)
+
+    async def _query(self, reverse):
+        now = current_time_millis()
+        # Reuse answers already heard through service discovery when available.
+        for resolver in self.resolvers:
+            for record in resolver.zeroconf.cache.get_all_by_details(reverse, 12, 1):
+                if isinstance(record, DNSPointer) and not record.is_expired(now) and self._name(record):
+                    return record
+        future = asyncio.get_running_loop().create_future()
+        listener = _PointerListener(reverse, future)
+        question = DNSQuestion(reverse, 12, 1)  # PTR / IN; request multicast replies.
+        registered = []
+        try:
+            for resolver in self.resolvers:
+                resolver.zeroconf.async_add_listener(listener, question)
+                registered.append(resolver)
+            for _ in range(2):
+                if future.done():
+                    return future.result()
+                outgoing = DNSOutgoing(0)  # Standard DNS question, sent to mDNS.
+                outgoing.add_question(question)
+                for resolver in self.resolvers:
+                    resolver.zeroconf.async_send(outgoing)
+                try:
+                    return await asyncio.wait_for(asyncio.shield(future), self.timeout / 2)
+                except asyncio.TimeoutError:
+                    continue
+            return None
+        finally:
+            for resolver in registered:
+                resolver.zeroconf.async_remove_listener(listener)
+            if not future.done():
+                future.cancel()
+
+    async def close(self):
+        self.running = False
+        for task in self.tasks.values():
+            task.cancel()
+        await asyncio.gather(*list(self.tasks.values()), return_exceptions=True)
+        self.tasks.clear()
+        for resolver in self.owned:
+            await resolver.async_close()
+        self.owned.clear()
+        self.resolvers.clear()
+        self.cache.clear()

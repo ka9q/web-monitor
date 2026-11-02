@@ -12,5 +12,6 @@
       "urls": "stun:stun.cloudflare.com:3478"
     }
   ],
-  "channel_timeout": 300
+  "channel_timeout": 300,
+  "source_names": true
 }

@@ -5,7 +5,7 @@ Build on Debian (intended initial target: trixie or later):
 
     sudo apt install build-essential debhelper dh-python python3-all
     dpkg-buildpackage -us -uc -b
-    sudo apt install ../web-monitor_0.4.0_all.deb
+    sudo apt install ../web-monitor_0.5.0_all.deb
 
 Runtime dependencies are resolved by apt. No pip install or virtual environment
 creation happens during package installation. Debian trixie supplies aiortc
@@ -67,3 +67,6 @@ UDP/HTTP permission; run python3 -m unittest -v explicitly on the build/test hos
 
 Frequency metadata also requires receiver-LAN input on UDP 5006 (same multicast
 addresses as audio). No additional dependency or service permission is needed.
+
+Source hostname resolution uses direct mDNS PTR queries on the gateway, not
+NSS. It is enabled by default; source_names=false disables it.

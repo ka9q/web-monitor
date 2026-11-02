@@ -98,7 +98,8 @@ function render() {
     row.querySelector('.name').textContent = title;
     row.querySelector('.volume input').setAttribute('aria-label', `Volume for ${title}`);
     row.querySelector('.pan input').setAttribute('aria-label', `Pan for ${title}`);
-    row.querySelector('.details').textContent = [channel.mode, channel.group, `${channel.source} / ${channel.ssrc}`].filter(Boolean).join(' · ');
+    const source = channel.source_name ? `${channel.source_name} (${channel.source})` : channel.source;
+    row.querySelector('.details').textContent = [channel.mode, channel.group, `${source} / ${channel.ssrc}`].filter(Boolean).join(' · ');
     const checkbox = row.querySelector('[type=checkbox]');
     checkbox.checked = selected.has(channel.id);
     row.classList.toggle('selected', checkbox.checked);

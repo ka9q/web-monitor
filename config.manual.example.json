@@ -32,5 +32,6 @@
       ]
     }
   ],
-  "channel_timeout": 300
+  "channel_timeout": 300,
+  "source_names": true
 }
