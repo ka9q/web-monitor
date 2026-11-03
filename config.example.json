@@ -4,7 +4,7 @@
     "127.0.0.1",
     "::1"
   ],
-  "port": 8080,
+  "port": 8082,
   "discovery": true,
   "groups": [],
   "ice_servers": [
