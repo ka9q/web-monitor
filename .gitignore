@@ -8,4 +8,6 @@ config.json
 *.log
 .debhelper/*
 debhelper-build-stamp
+debian/files
+debian/web-monitor
 
