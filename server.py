@@ -84,16 +84,41 @@ class OpusTrack(MediaStreamTrack):
         super().stop()
 
 
+def listener_name(value):
+    if not isinstance(value, str) or len(value) > 80 or any(ord(c) < 32 or ord(c) == 127 for c in value):
+        raise web.HTTPBadRequest(text='listener name must be text of at most 80 characters without control characters')
+    return value.strip()
+
+
 class Session:
-    def __init__(self, peer, channels):
+    def __init__(self, peer, channels, remote=None, listener=''):
         self.peer = peer
         self.tracks = {channel.id: OpusTrack(channel) for channel in channels}
         self.touched = time.monotonic()
+        self.started = self.touched
+        self.log_id = secrets.token_hex(6)  # Independent of the session access token.
+        self.remote = remote
+        self.listener = listener
+        self.selected = None
 
-    def select(self, ids):
+    def log(self, event, **fields):
+        LOG.info('listener %s', json.dumps(dict(event=event, session=self.log_id,
+            remote=self.remote, listener=self.listener, **fields), ensure_ascii=True))
+
+    def select(self, ids, identity=None):
         if not isinstance(ids, list) or any(not isinstance(i, str) or i not in self.tracks for i in ids):
             raise web.HTTPBadRequest(text='selection must contain negotiated channel IDs')
         selected = set(ids)
+        if identity is not None and identity != self.listener:
+            self.listener = identity
+            self.log('identity')
+        if selected != self.selected:
+            self.selected = selected
+            self.log('selection', channels=[dict(id=key, name=self.tracks[key].channel.name,
+                group=self.tracks[key].channel.group_name,
+                source=self.tracks[key].channel.source, ssrc=self.tracks[key].channel.ssrc,
+                frequency_hz=self.tracks[key].channel.describe().get('frequency_hz'))
+                for key in sorted(selected)])
         for key, track in self.tracks.items():
             track.select(key in selected)
         self.touched = time.monotonic()
@@ -156,15 +181,18 @@ def create_app(config, demo=False):
             invalid_packets=hub.invalid, ignored_packets=hub.ignored,
             status_packets=hub.status_packets, invalid_status_packets=hub.invalid_status))
 
-    async def remove(key):
+    async def remove(key, reason='closed'):
         session = sessions.pop(key, None)
         if session:
+            session.log('disconnect', reason=reason,
+                        duration_seconds=round(time.monotonic() - session.started, 1))
             await session.close()
 
     async def offer(request):
         if len(sessions) >= config.get('max_sessions', 16):
             raise web.HTTPServiceUnavailable(text='listener limit reached')
         body = await json_object(request)
+        identity = listener_name(body.get('listener', ''))
         ids = body.get('channels')
         if (not isinstance(ids, list) or not ids or
                 len(ids) > config.get('max_channels_per_session', 32) or
@@ -177,18 +205,20 @@ def create_app(config, demo=False):
             raise web.HTTPBadRequest(text='an SDP offer is required')
         ice = [RTCIceServer(**item) for item in config.get('ice_servers', [])]
         peer = RTCPeerConnection(RTCConfiguration(iceServers=ice))
-        session = Session(peer, [available[key] for key in ids])
+        session = Session(peer, [available[key] for key in ids], request.remote, identity)
         key = secrets.token_urlsafe(24)
         sessions[key] = session
+        session.log('connect', negotiated_channels=len(ids))
 
         @peer.on('connectionstatechange')
         async def state_change():
+            session.log('connection_state', state=peer.connectionState)
             if peer.connectionState in ('failed', 'closed'):
-                await remove(key)
+                await remove(key, peer.connectionState)
             elif peer.connectionState == 'disconnected':
                 await asyncio.sleep(15)
                 if peer.connectionState == 'disconnected':
-                    await remove(key)
+                    await remove(key, 'disconnected')
 
         try:
             session.select(body.get('selected', []))
@@ -206,11 +236,11 @@ def create_app(config, demo=False):
             return web.json_response(dict(id=key, type=peer.localDescription.type,
                                           sdp=peer.localDescription.sdp))
         except web.HTTPException:
-            await remove(key)
+            await remove(key, 'invalid_offer')
             raise
         except Exception as error:
             LOG.warning('offer failed: %s', error)
-            await remove(key)
+            await remove(key, 'negotiation_failed')
             raise web.HTTPBadRequest(text='WebRTC negotiation failed; check server log') from error
 
     async def selection(request):
@@ -218,11 +248,12 @@ def create_app(config, demo=False):
         if not session:
             raise web.HTTPNotFound(text='session expired; reconnect')
         body = await json_object(request)
-        session.select(body.get('selected'))
+        identity = listener_name(body.get('listener', session.listener))
+        session.select(body.get('selected'), identity)
         return web.json_response({'ok': True})
 
     async def delete(request):
-        await remove(request.match_info['id'])
+        await remove(request.match_info['id'], 'client_disconnect')
         return web.Response(status=204)
 
     async def reap():
@@ -231,7 +262,7 @@ def create_app(config, demo=False):
             hub.prune_idle()
             for key, session in list(sessions.items()):
                 if time.monotonic() - session.touched > 90:
-                    await remove(key)
+                    await remove(key, 'idle_timeout')
 
     async def lifecycle(application):
         hub.start()
@@ -259,7 +290,7 @@ def create_app(config, demo=False):
             for task in tasks:
                 with contextlib.suppress(asyncio.CancelledError):
                     await task
-            await asyncio.gather(*(remove(key) for key in list(sessions)))
+            await asyncio.gather(*(remove(key, 'server_shutdown') for key in list(sessions)))
 
     app.cleanup_ctx.append(lifecycle)
     app.router.add_get('/', index)

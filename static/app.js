@@ -48,7 +48,7 @@ function updateSortControls() {
   $('selected-first').checked = selectedFirst;
 }
 function status(text, error = false) { $('status').textContent = text; $('status').classList.toggle('error', error); }
-function save() { try { localStorage.setItem('web-monitor-v1', JSON.stringify({selected:[...selected], volumes, pans, sortKey, descending, selectedFirst})); } catch (_) {} }
+function save() { try { localStorage.setItem('web-monitor-v1', JSON.stringify({selected:[...selected], volumes, pans, sortKey, descending, selectedFirst, listener:$('listener').value})); } catch (_) {} }
 function gainFor(id) { const v = Number(volumes[id] ?? .8); return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : .8; }
 function panFor(id) { const p = Number(pans[id] ?? 0); return Number.isFinite(p) ? Math.max(-1, Math.min(1, p)) : 0; }
 function panLabel(value) { return Math.abs(value) < .005 ? 'Center' : `${Math.round(Math.abs(value) * 100)}% ${value < 0 ? 'left' : 'right'}`; }
@@ -123,7 +123,7 @@ function render() {
 async function syncSelection() {
   if(!enabled || connecting) return;
   if(!active || chosen().some(id => !active.ids.includes(id))) return connect();
-  try { await api(`/api/sessions/${active.id}`, 'PUT', {selected:chosen(active.ids)}); }
+  try { await api(`/api/sessions/${active.id}`, 'PUT', {selected:chosen(active.ids), listener:$('listener').value}); }
   catch(error) { status(error.message, true); scheduleReconnect(); }
 }
 function scheduleReconnect() {
@@ -162,7 +162,7 @@ async function connect() {
   try {
     await pc.setLocalDescription(await pc.createOffer());
     await gathered(pc);
-    const answer = await api('/api/sessions', 'POST', {type:'offer', sdp:pc.localDescription.sdp, channels:ids, selected:[]});
+    const answer = await api('/api/sessions', 'POST', {type:'offer', sdp:pc.localDescription.sdp, channels:ids, selected:[], listener:$('listener').value});
     session.id = answer.id;
     if(!enabled || revision !== generation) { await release(session); return; }
     await pc.setRemoteDescription({type:answer.type, sdp:answer.sdp});
@@ -175,7 +175,7 @@ async function connect() {
       if(['failed','disconnected'].includes(pc.connectionState)) { status('Audio connection interrupted; retrying…', true); scheduleReconnect(); }
     };
     await release(old);
-    await api(`/api/sessions/${session.id}`, 'PUT', {selected:chosen(ids)});
+    await api(`/api/sessions/${session.id}`, 'PUT', {selected:chosen(ids), listener:$('listener').value});
     status('Audio enabled. Waiting for the WebRTC connection…');
   } catch(error) {
     if(active === session) active = null;
@@ -209,6 +209,8 @@ $('selected-first').addEventListener('change', () => { selectedFirst = $('select
 updateSortControls();
 $('master').addEventListener('input', updateMaster);
 $('mute').addEventListener('change', updateMaster);
+$('listener').value = typeof saved.listener === 'string' ? saved.listener.slice(0, 80) : '';
+$('listener').addEventListener('change', () => { save(); syncSelection(); });
 async function refresh() {
   try {
     const data = await api('/api/channels');
