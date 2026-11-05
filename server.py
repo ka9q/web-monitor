@@ -6,6 +6,7 @@ import contextlib
 import fractions
 import json
 import logging
+from logging.handlers import RotatingFileHandler
 import pathlib
 import secrets
 import ssl
@@ -21,6 +22,7 @@ from discovery import OpusDiscovery, SourceNames, discovery_options, source_name
 
 ROOT = pathlib.Path(__file__).resolve().parent
 LOG = logging.getLogger('web-monitor')
+LISTENER_LOG = logging.getLogger('web-monitor.listener')
 TIME_BASE = fractions.Fraction(1, 48000)
 # Ubuntu 22.04's aiohttp 3.8 predates AppKey.
 HUB = web.AppKey('hub', Hub) if hasattr(web, 'AppKey') else 'web_monitor.hub'
@@ -102,7 +104,7 @@ class Session:
         self.selected = None
 
     def log(self, event, **fields):
-        LOG.info('listener %s', json.dumps(dict(event=event, session=self.log_id,
+        LISTENER_LOG.info('listener %s', json.dumps(dict(event=event, session=self.log_id,
             remote=self.remote, listener=self.listener, **fields), ensure_ascii=True))
 
     def select(self, ids, identity=None):
@@ -302,6 +304,18 @@ def create_app(config, demo=False):
     return app
 
 
+def configure_listener_logging(filename):
+    """Route listener events exclusively to a bounded file when requested."""
+    if not filename:
+        return
+    handler = RotatingFileHandler(filename, maxBytes=10 * 1024 * 1024,
+                                  backupCount=5, encoding='utf-8')
+    handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+    LISTENER_LOG.addHandler(handler)
+    LISTENER_LOG.setLevel(logging.INFO)
+    LISTENER_LOG.propagate = False
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=pathlib.Path)
@@ -310,6 +324,10 @@ def main():
     parser.add_argument('--port', type=int, help='override HTTP port')
     parser.add_argument('--cert', help='TLS certificate PEM')
     parser.add_argument('--key', help='TLS private key PEM')
+    parser.add_argument('--listener-log', type=pathlib.Path,
+                        help='listener activity file (10 MiB, five rotated backups)')
+    parser.add_argument('--access-log', action='store_true',
+                        help='enable routine HTTP request logs in the journal/stderr')
     args = parser.parse_args()
     if not args.config and not args.demo:
         parser.error('provide --config FILE or --demo')
@@ -323,9 +341,11 @@ def main():
         tls = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         tls.load_cert_chain(args.cert, args.key)
     logging.basicConfig(level=logging.INFO)
+    configure_listener_logging(args.listener_log)
     app = create_app(config, demo=args.demo)
     web.run_app(app, host=args.listen or config.get('listen', '127.0.0.1'),
-                port=args.port or config.get('port', 8080), ssl_context=tls)
+                port=args.port or config.get('port', 8080), ssl_context=tls,
+                access_log=logging.getLogger('aiohttp.access') if args.access_log else None)
 
 
 if __name__ == '__main__':

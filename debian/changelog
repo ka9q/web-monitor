@@ -1,3 +1,10 @@
+web-monitor (0.5.1) unstable; urgency=medium
+
+  * Write listener activity to a private rotating log file under systemd.
+  * Disable routine HTTP access logs by default; retain --access-log for debugging.
+
+ -- Web monitor maintainers <web-monitor@localhost>  Thu, 05 Nov 2026 12:00:00 -0800
+
 web-monitor (0.5.0) unstable; urgency=medium
 
   * Resolve source IPv4 hostnames on the server using direct mDNS PTR queries.

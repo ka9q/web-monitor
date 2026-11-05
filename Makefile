@@ -52,7 +52,7 @@ install-service:
 	$(INSTALL) -d -m 0755 "$(DESTDIR)$(SYSTEMDUNITDIR)"
 	sed -e 's|^WorkingDirectory=.*|WorkingDirectory=$(LIBDIR)|' \
 	    -e 's|^LoadCredential=.*|LoadCredential=web-monitor.json:$(SYSCONFDIR)/web-monitor.json|' \
-	    -e 's|^ExecStart=.*|ExecStart=$(BINDIR)/web-monitor --config %d/web-monitor.json|' \
+	    -e 's|^ExecStart=.*|ExecStart=$(BINDIR)/web-monitor --config %d/web-monitor.json --listener-log /var/log/web-monitor/listeners.log|' \
 	    debian/web-monitor.service > "$(DESTDIR)$(SYSTEMDUNITDIR)/web-monitor.service"
 	chmod 0644 "$(DESTDIR)$(SYSTEMDUNITDIR)/web-monitor.service"
 
