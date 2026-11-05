@@ -1,8 +1,11 @@
-web-monitor (2026.11.05-1-trixie1) trixie; urgency=medium
+web-monitor (0.5.2) unstable; urgency=medium
 
-  * commit d7327e6aba32cba15e1eb3ceba981553b9727bf1
+  * Route listener events to /var/log/web-monitor.log using rsyslog.
+  * Keep service lifecycle and operational messages in normal system logging.
+  * Rotate listener logs with logrotate and grant adm group read access.
+  * Remove the private LogsDirectory requirement; retain DynamicUser.
 
- -- Phil Karn <karn@ka9q.net>  Thu, 05 Nov 2026 13:54:56 -0800
+ -- Web monitor maintainers <web-monitor@localhost>  Thu, 05 Nov 2026 14:30:00 -0800
 
 web-monitor (0.5.1) unstable; urgency=medium
 

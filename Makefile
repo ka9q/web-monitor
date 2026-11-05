@@ -15,7 +15,7 @@ INSTALL ?= install
 MODULES = server.py core.py demo.py discovery.py
 ASSETS = static/index.html static/app.js static/style.css
 
-.PHONY: all help install install-app install-config install-service install-deps test
+.PHONY: all help install install-app install-config install-service install-logging install-deps test
 all: help
 
 help:
@@ -31,7 +31,7 @@ help:
 	  'DESTDIR supports staging; install-deps is deliberately not stageable.' \
 	  'For distro dependencies: sudo make install APP_PYTHON=/usr/bin/python3'
 
-install: install-app install-config install-service
+install: install-app install-config install-service install-logging
 
 install-app:
 	$(INSTALL) -d -m 0755 "$(DESTDIR)$(LIBDIR)" "$(DESTDIR)$(LIBDIR)/static" "$(DESTDIR)$(BINDIR)"
@@ -52,7 +52,7 @@ install-service:
 	$(INSTALL) -d -m 0755 "$(DESTDIR)$(SYSTEMDUNITDIR)"
 	sed -e 's|^WorkingDirectory=.*|WorkingDirectory=$(LIBDIR)|' \
 	    -e 's|^LoadCredential=.*|LoadCredential=web-monitor.json:$(SYSCONFDIR)/web-monitor.json|' \
-	    -e 's|^ExecStart=.*|ExecStart=$(BINDIR)/web-monitor --config %d/web-monitor.json --listener-log /var/log/web-monitor/listeners.log|' \
+	    -e 's|^ExecStart=.*|ExecStart=$(BINDIR)/web-monitor --config %d/web-monitor.json|' \
 	    debian/web-monitor.service > "$(DESTDIR)$(SYSTEMDUNITDIR)/web-monitor.service"
 	chmod 0644 "$(DESTDIR)$(SYSTEMDUNITDIR)/web-monitor.service"
 
@@ -65,3 +65,9 @@ install-deps:
 
 test:
 	$(PYTHON) -m unittest -v
+
+# Route listener events through the existing journal/rsyslog pipeline.
+install-logging:
+	$(INSTALL) -d -m 0755 "$(DESTDIR)/etc/rsyslog.d" "$(DESTDIR)/etc/logrotate.d"
+	$(INSTALL) -m 0644 debian/30-web-monitor.conf "$(DESTDIR)/etc/rsyslog.d/30-web-monitor.conf"
+	$(INSTALL) -m 0644 debian/web-monitor.logrotate "$(DESTDIR)/etc/logrotate.d/web-monitor"

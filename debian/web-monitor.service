@@ -8,13 +8,11 @@ StartLimitBurst=5
 [Service]
 Type=simple
 DynamicUser=yes
-LogsDirectory=web-monitor
-LogsDirectoryMode=0700
 WorkingDirectory=/usr/local/lib/web-monitor
 
 # systemd reads the root-owned config and gives this unit a private read-only copy.
 LoadCredential=web-monitor.json:/etc/radio/web-monitor.json
-ExecStart=/usr/local/bin/web-monitor --config ${CREDENTIALS_DIRECTORY}/web-monitor.json --listener-log /var/log/web-monitor/listeners.log
+ExecStart=/usr/local/bin/web-monitor --config ${CREDENTIALS_DIRECTORY}/web-monitor.json
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=20
@@ -54,6 +52,7 @@ SystemCallErrorNumber=EPERM
 # Optional additional restriction: test with your Python/native-library build.
 # MemoryDenyWriteExecute=yes
 
+SyslogIdentifier=web-monitor
 StandardOutput=journal
 StandardError=journal
 

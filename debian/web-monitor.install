@@ -1,2 +1,3 @@
 server.py core.py demo.py discovery.py usr/local/lib/web-monitor/
 static/* usr/local/share/web-monitor/static/
+debian/30-web-monitor.conf etc/rsyslog.d/

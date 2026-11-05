@@ -28,42 +28,43 @@ User-controlled values are JSON-escaped to prevent forged multiline entries.
 Listener file and routine logs
 ------------------------------
 
-The supplied systemd service writes listener activity exclusively to:
+The service tags its journal output with SyslogIdentifier=web-monitor. The
+rsyslog rule in debian/30-web-monitor.conf selects only the listener logger's
+records and writes /var/log/web-monitor.log, owned by root:adm, mode 0640.
+The stop action prevents listener records from also filling /var/log/syslog.
+Listener records remain visible in the journal. Service start/stop messages,
+errors and other operational messages retain their normal syslog routing.
+Routine HTTP access logging is disabled; --access-log enables it for debugging.
 
-    /var/log/web-monitor/listeners.log
+DynamicUser remains enabled. No private log directory or static account is
+needed: rsyslog owns the file. Do not pass --listener-log in this setup; that
+optional argument writes directly to a file instead of the journal.
 
-Entries include a timestamp followed by the existing listener JSON record.
-The file rotates at 10 MiB with five backups (about 60 MiB total). systemd
-creates a private directory for DynamicUser; no manual chown is needed.
-Do not also configure external logrotate for this file.
+Logrotate rotates weekly, or above 10 MiB at its next scheduled run, retaining
+five backups. Files and rotated logs are readable by root and the adm group.
 
-    sudo tail -F /var/log/web-monitor/listeners.log
+Install rsyslog and logrotate if missing. Extract this update in your source
+tree, rebuild/install your Debian package, then run:
 
-Systemd start/stop messages and application operational warnings/errors retain
-their existing journal/syslog routing. Routine HTTP access logging is disabled;
---access-log restores it when troubleshooting. Other libraries may still emit
-messages to the journal. This change does not alter rsyslog configuration.
-
-Outside the supplied service, pass --listener-log /writable/path/listeners.log.
-The parent directory must exist. Without that option listener records still go
-to stderr/journal. An unwritable log file causes startup to fail visibly.
-
-Installing this update
-----------------------
-
-Extract the update into your web-monitor source directory. For a local Makefile
-installation, update both the application and service (install-app alone does
-not update the service):
-
-    sudo make install-app install-service
+    sudo rsyslogd -N1
+    sudo systemctl restart rsyslog
     sudo systemctl daemon-reload
+    sudo systemctl reset-failed web-monitor
     sudo systemctl restart web-monitor
 
-For a Debian package installation, rebuild/install the package instead, then:
+For a Makefile installation, instead of rebuilding the package, run:
 
-    sudo systemctl daemon-reload
-    sudo systemctl restart web-monitor
+    sudo make install-app install-service install-logging
 
-If a manually installed /etc/systemd/system/web-monitor.service overrides the
-packaged unit, update that unit too. Check with systemctl cat web-monitor.
-Preserve any local bind/TLS options when adapting ExecStart.
+Then run the same validation/restart commands above. Check systemctl cat
+web-monitor: a manually installed /etc/systemd/system unit overrides a packaged
+unit. Update any such unit too, preserving local bind/TLS arguments. Remove
+LogsDirectory and the old --listener-log argument; add SyslogIdentifier=web-monitor.
+
+Test routing without making a listener connection:
+
+    logger -t web-monitor 'INFO:web-monitor.listener:listener {"event":"routing_test"}'
+    sudo tail /var/log/web-monitor.log
+
+Do not delete old logs or /var/log/private; they are no longer used by this
+configuration. No permission changes to /var/log/private are necessary.
