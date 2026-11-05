@@ -3,3 +3,9 @@ __pycache__/
 config.json
 *.pem
 *.~undo-tree~
+*.substvars
+*.debhelper
+*.log
+.debhelper/*
+debhelper-build-stamp
+
