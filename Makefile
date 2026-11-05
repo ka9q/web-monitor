@@ -15,7 +15,7 @@ INSTALL ?= install
 MODULES = server.py core.py demo.py discovery.py
 ASSETS = static/index.html static/app.js static/style.css
 
-.PHONY: all help install install-app install-config install-service install-logging install-deps test
+.PHONY: all help install install-app install-config install-service install-logging install-deps uninstall test
 all: help
 
 help:
@@ -24,6 +24,7 @@ help:
 	  '  sudo make install-deps   Create private venv and install dependencies' \
 	  '  sudo make install        Install files; use existing venv or system Python' \
 	  '  sudo make install-app    Update code/assets/launcher only' \
+	  '  sudo make uninstall      Remove local installation; keep config and logs' \
 	  '  make test PYTHON=...     Run tests with a dependency-equipped Python' \
 	  '' \
 	  'Existing /etc/radio/web-monitor.json is preserved.' \
@@ -71,3 +72,8 @@ install-logging:
 	$(INSTALL) -d -m 0755 "$(DESTDIR)/etc/rsyslog.d" "$(DESTDIR)/etc/logrotate.d"
 	$(INSTALL) -m 0644 debian/30-web-monitor.conf "$(DESTDIR)/etc/rsyslog.d/30-web-monitor.conf"
 	$(INSTALL) -m 0644 debian/web-monitor.logrotate "$(DESTDIR)/etc/logrotate.d/web-monitor"
+
+# Stop the service first. Reinstall the .deb afterwards: local and packaged
+# application files deliberately share /usr/local paths.
+uninstall:
+	$(PYTHON) uninstall.py --destdir "$(DESTDIR)" --bindir "$(BINDIR)" --libdir "$(LIBDIR)" --venv "$(VENV)" --unitdir "$(SYSTEMDUNITDIR)"

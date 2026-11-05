@@ -423,3 +423,31 @@ service, and reload the browser. No new dependencies or unit permissions are
 required. Tests include a real loopback multicast PTR question/response,
 positive and negative cache behavior, bounded tasks/cancellation, expiry, and
 source-name reporting through the HTTP catalogue.
+
+
+Removing a local installation
+-----------------------------
+
+To switch from a Makefile installation to the Debian package:
+
+    sudo systemctl stop web-monitor
+    sudo make uninstall
+    sudo apt install --reinstall web-monitor
+    sudo systemctl daemon-reload
+    sudo rsyslogd -N1
+    sudo systemctl restart rsyslog
+    sudo systemctl reset-failed web-monitor
+    sudo systemctl start web-monitor
+
+Alternatively reinstall your .deb with sudo dpkg -i /path/to/web-monitor.deb.
+The reinstall is required even if the package was already installed: local and
+packaged application files share /usr/local paths. The local unit in
+/etc/systemd/system is removed, allowing the packaged unit to take precedence.
+
+uninstall removes the launcher, known application/static files, private venv,
+local service unit, rsyslog rule and logrotate rule. It preserves the receiver
+configuration, logs, service drop-ins, unrelated files and packaged service unit.
+No service is automatically stopped, disabled, reloaded or restarted. Use the
+same PREFIX/BINDIR/LIBDIR/VENV/SYSTEMDUNITDIR overrides as at installation time.
+DESTDIR supports staged uninstall. The script refuses recursive removal of a
+VENV directory without pyvenv.cfg. Keep uninstall.py alongside the Makefile.
