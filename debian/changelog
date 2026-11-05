@@ -1,3 +1,9 @@
+web-monitor (2026.11.05-2-trixie1) trixie; urgency=medium
+
+  * commit 1328f8207e3a87a944755176cc430ab92ad72b34
+
+ -- Phil Karn <karn@ka9q.net>  Thu, 05 Nov 2026 14:23:11 -0800
+
 web-monitor (0.5.2) unstable; urgency=medium
 
   * Route listener events to /var/log/web-monitor.log using rsyslog.
