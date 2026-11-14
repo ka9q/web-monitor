@@ -49,12 +49,15 @@
 122.725 MHz = KRNM Ramona Airport CTAF/Unicom
 122.75 MHz = Fixed-wing Air-to-air
 122.775 MHz = KSNA West Coast Charters/informal air-to-air
+122.8 MHz = Common Unicom / L08 Borrego Valley CTAF
+122.85 MHz = Southern LA VFR corridor reporting/KSMO noise mgmt
 123.025 MHz = Helicopter Air-to-air
 123.05 MHz = L18 Fallbrook KCPM Compton/Woodley CTAF/Unicom
 123.1 MHz = Search and Rescue
 123.45 MHz = Flight training
 123.5 MHz = KMYF FBO & Flight School Ops
 123.725 MHz = KMYF Clearance Delivery
+123.75 MHz = ?
 123.8 MHz = KSEE Tower Secondary North
 123.85 MHz = NorCal Approach Tracy/Livermore/Stockton
 123.9 MHz = KSAN Ground
@@ -69,6 +72,7 @@
 124.75 MHz = LA Center Pacific offshore low
 124.85 MHz = LA Center Sector 8 Low Seligman AZ
 124.9 MHz = SoCAL TRACON LA/Ontario high altitude
+125.1 MHz = KSEE Clearance Delivery
 125.15 MHz = SoCal Approach North Island/Coronado
 125.2 MHz = SoCal Approach Malibu
 125.275 MHz = LA Center Sector 36 high altitude eastern Sector 18 Pleasants Peak/Ontario
@@ -109,6 +113,7 @@
 128.375 MHz = LA Center Sector 27 High Altitude (Ontario/Whittier)
 128.45 MHz = SoCal/LA Approach (Santa Monica/LAX north) / ZAB enroute
 128.5 MHz = SoCal Approach LA Stadium/North Final
+128.55 MHz = LAX Special Flight Rules Area VFR Corridor
 128.6 MHz = LA Center Sector 9 Low-mid Laguna
 128.75 MHz = LA Center/Regional
 128.775 MHz = KNFG Camp Pendleton MCAS Tower
@@ -135,7 +140,9 @@
 131.05 MHz = Alaska Airlines KSNA John Wayne
 131.175 MHz = ARINC Enroute SE
 131.2 MHz = Alaska Airlines
+131.3 MHz = Alaska Airlines Ramp KLAX/Delta Air Lines
 131.35 MHz = American Airlines
+131.375 MHz = Clay Lacy Aviation KSNA
 131.4 MHz = AOC ops
 131.575 MHz = Airline ops
 131.6 MHz = Atlantic Aviation KLAX/KVNY/KLGB/KSBD/KBFL
@@ -160,6 +167,7 @@
 133.25 MHz = Albuquerque Center/Oakland Center/flight test
 133.55 MHz = LA Center Sector 37 High Hector/Barstow/29 Palms
 133.475 MHz = KNKX ATIS
+133.5 MHz = Albuquerque center/Oakland Center
 133.65 MHz = SoCal Joshua Approach/High Desert/Mojave/Antelope V, ZAB
 133.75 MHz = LA Center Sector 20 Low RIverside/Pleasants Peak
 133.9 MHz = LAX North Tower, SoCal Approach ILS monitor 24
@@ -171,6 +179,7 @@
 134.65 MHz = LA Center Sector 6 Low (Barstow)
 134.8 MHz = KSAN ATIS
 134.85 MHz = KCRQ Clearance Delivery
+134.9 MHz = ?
 135.1 MHz = KNZY NAS North island Tower
 135.15 MHz = Albuquerque Center high altitude
 135.2 MHz = KNKX Miramar Foss Field Tower
@@ -179,6 +188,8 @@
 135.3 MHz = LA Center Sector 26 High (Lebec/Palmdale)
 135.5 MHz = Albuquerque Center/Oakland Center
 135.55 MHz = LA Center Sector 32 High Seligman AZ/Nelson NV
+135.85 MHz = FAA Flight Check
+135.95 MHz = FAA Flight Check/KPOC ATIS/KOXR ATIS
 135.975 MHz = Albuqerque Center/Oakland Center
 136.5 MHz = Jet Blue
 151.22 MHz = San Diego Mercy Air/Cal Fire Air Tactics
