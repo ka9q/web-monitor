@@ -19,6 +19,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 119.200,Local Airport,Montgomery-Gibbs (KMYF),Tower (North / Primary),Local Class D tower
 119.400,Long Beach Airport (KLGB),Tower (Runway 30 / 2),Coastal / inversion airborne
 119.400,Regional Airport,Long Beach Airport (KLGB),Tower (Runway 30 / 2),Coastal inversion airborne
+119.450,Regional Airport,San Bernardino Intl (KSBD) / Fresno TRACON,KSBD Tower & CTAF (Primary) or KFAT Approach,Inland Empire cargo/tower airborne
 119.500,Cross-Border,Tijuana Intl (MMTJ),Tijuana Tower (Primary),Cross-border mesa line-of-sight
 119.600,SoCal TRACON,SoCal Approach (San Diego),San Diego West Approach & Departure,Primary local TRACON
 119.950,ARTCC En Route,Los Angeles Center (ZLA),Sector 30 Oceanic (Laguna RCAG),Local RCAG (two-way)
@@ -26,6 +27,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 120.050,Regional Airport,Los Angeles Intl (KLAX),Ground Metering / Clearance Delivery,Airborne early call-in
 120.150,Local Airport,McClellan-Palomar (KCRQ),ATIS (Carlsbad),North County coastal mesa
 120.300,Cross-Border,Tijuana Intl (MMTJ),Tijuana Approach Control,Cross-border terminal
+120.600,Regional Airport,Ontario Intl (KONT),KONT Tower (Primary),Inland Empire cargo/tower airborne
 120.650,Local Airport,Imperial Beach NOLF (KNRS),Ream Field Tower (VHF),South Bay military tower
 120.700,Local Airport,Gillespie Field (KSEE),Tower (Primary) & CTAF,East County Class D tower
 120.900,Local Airport,Oceanside Municipal (KOKB),CTAF / Unicom,North County coastal
@@ -195,3 +197,4 @@ VHF_MHz,UHF_MHz,Sector,Stratum,RCAG_Sites,Reception_From_KNKX
 135.250,257.675,Sector 33,High (Bryce Canyon),Grand Canyon AZ / Cedar City UT,Airborne only (far-edge skip)
 135.300,372.000,Sector 26,High,Lebec / Palmdale CA,Airborne only (high-altitude skip)
 135.550,299.200,Sector 32,High,Seligman AZ / Nelson NV,Airborne only (high-altitude skip)
+127.450,ARTCC/Terminal,Oakland Center (ZOA) / ZAB / SoCal,En Route High Sectors or Regional Terminal,High-altitude skip

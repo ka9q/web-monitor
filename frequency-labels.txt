@@ -1,5 +1,7 @@
 2.5 MHz = WWV/WWVH
 5.0 MHz = WWV/WWVH
+5.547 MHz = San Francisco aeronautical
+5.574 MHz = San Francisco aeronautical
 8.843 MHz = San Francisco aeronautical
 10.0 MHz = WWV/WWVH
 11.282 MHz = San Francisco aeronautical
@@ -19,12 +21,14 @@
 119.05 MHz = SoCal Approach Burbank/Van Nuys, Oxnard CTAF
 119.2 MHz = KMYF Montgomery Tower
 119.4 MHz = KLBG Long Beach Tower 30 arrival/2 dep
+119.45 MHz = KSBD San Bernardino Tower/KFAT Fresno Approach
 119.6 MHz = SoCal Approach West
 119.875 MHz = KRNM Ramona Tower
 119.95 MHz = LA Center Sector 30 Oceanic
 120.05 MHz = LAX Ground Metering/Clearance Delivery
 120.15 MHz = KCRQ ATIS
 120.3 MHz = MMTJ Tijuana approach
+120.6 MHz = KONT Ontario Tower
 120.65 MHz = KNRS Imperial Beach Tower
 120.7 MHz = KSEE Gillespie Tower
 120.95 MHz = KLAX South Tower/TRACON PM-1
@@ -72,6 +76,8 @@
 127.1 MHz = LA Center Sector 3 Low (Bakersfield)
 127.3 MHz = SoCal Approach Coastal/Oceanside
 127.35 MHz = LA Center Sector 36 Julian/Blythe High altitude
+127.4 MHz = SoCal KLAX arrivals
+127.45 MHz = Oakland/Albuquerque Center enroute/local terminal
 127.525 MHz = LA Center Sector 40 High Altitude Thermal/Julian/Blythe
 128.075 MHz = LA Center Sector 35 High Peach Springs AZ/Albuquerque/Oakland ARTCC
 128.1 MHz = SoCal Approach High 2
