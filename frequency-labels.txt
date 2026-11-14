@@ -33,7 +33,9 @@
 123.9 MHz = KSAN Ground
 124.3 MHz = LA Center/SoCal TRACON transitions
 124.35 MHz = SoCal Approach East
+124.55 MHz = SoCal Approach Joshua/High Desert/Antelope/Palmdale/Lancaster LAX NE arrivals
 124.6 MHz = ?
+124.625 MHz = LA Center Sector 16 Mt Potosi NV
 124.75 MHz = LA Center Pacific offshore low
 124.9 MHz = SoCAL TRACON LA/Ontario high altitude
 125.15 MHz = SoCal Approach North Island/Coronado
@@ -42,6 +44,7 @@
 125.3 MHz = SoCal Apporach High
 125.35 MHz = SoCal Approach Coast/Alamitos
 125.45 MHz = KSEE ATIS
+125.5 MHz = SoCal approach Pomona/Ontario
 125.65 MHz = LA Center Sector 12 Low-mid altitude
 125.7 MHz = SoCal Departure San Diego North/East
 125.725 MHz = ?
@@ -52,6 +55,7 @@
 126.35 MHz = LA Center/Regional high altitude
 126.5 MHz = LA Center Sector 19 north & east
 126.525 MHz = LA Center Sector 25 High (Area A primary)
+126.7 MHz = LA Center enroute, SoCal terminal, Oakland center
 126.775 MHz = LA Center Sector 31 High altitude
 126.8 MHz = KSNA John Wayne/Orange Tower
 126.9 MHz = KMYF ATIS
@@ -80,6 +84,7 @@
 131.175 MHz = ARINC Enroute SE
 131.2 MHz = Alaska Airlines
 131.35 MHz = American Airlines
+131.575 MHz = Airline ops
 131.8 MHz = ARINC Enroute NW
 131.95 MHz = ARINC extended range VHF SFO
 132.025 MHz = KRNM ATIS
@@ -102,6 +107,7 @@
 135.1 MHz = KNZY NAS North island Tower
 135.15 MHz = Albuquerque Center high altitude
 135.2 MHz = KNKX Miramar Foss Field Tower
+135.275 MHz = military miramar/SoCal offshore range
 135.3 MHz = LA Center Sector 26 High (Lebec)
 151.22 MHz = San Diego Mercy Air/Cal Fire Air Tactics
 151.355 MHz = San Diego Mercy Air/Cal Fire Air Tactics 2
