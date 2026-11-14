@@ -54,7 +54,7 @@
 128.775 MHz = KNFG Camp Pendleton MCAS Tower
 128.9 MHz = ARINC Enroute southwest CONUS
 129.25 MHz = ARINC AOC
-129.40 MHz  ARINC Enroute great lakes/NE/Canada west coast
+129.40 MHz = ARINC Enroute great lakes/NE/Canada west coast
 129.45 MHz = ARINC central
 129.6 MHz = ARINC AOC
 130.4 MHz = ARINC Enroute west
