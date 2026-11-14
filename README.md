@@ -454,9 +454,10 @@ VENV directory without pyvenv.cfg. Keep uninstall.py alongside the Makefile.
 
 ### Frequency labels
 
-Create `frequency-labels.txt` in the same directory as the JSON file passed to
-`--config`. The file is optional and read at startup. Restart the monitor after
-editing it.
+For the systemd service, create `/etc/radio/frequency-labels.txt` with mode
+0644 so the service user can read it. For manual launches, place
+`frequency-labels.txt` beside the JSON config or pass `--frequency-labels FILE`.
+The file is optional and read at startup. Restart the monitor after editing it.
 
 ```ini
 # Tuned frequency = display name

@@ -24,7 +24,8 @@ The package installs:
 
 The static/ symlink beside server.py preserves the source checkout's layout.
 The code, assets, and configuration require no daemon write permission.
-Systemd loads configuration through LoadCredential into a private read-only file.
+The service reads web-monitor.json and the optional frequency-labels.txt directly
+from /etc/radio. Both files must be readable by the service user.
 
 This administrator-requested /usr/local layout is a deliberate Debian Policy
 9.1.2 exception. debian/rules overrides dh_usrlocal; Lintian will flag the

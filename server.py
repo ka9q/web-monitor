@@ -319,6 +319,8 @@ def configure_listener_logging(filename):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=pathlib.Path)
+    parser.add_argument("--frequency-labels", type=pathlib.Path,
+                        help="optional frequency label file")
     parser.add_argument('--demo', action='store_true', help='generate two test channels; no multicast input')
     parser.add_argument('--listen', help='override HTTP bind address')
     parser.add_argument('--port', type=int, help='override HTTP port')
@@ -342,8 +344,11 @@ def main():
         tls.load_cert_chain(args.cert, args.key)
     logging.basicConfig(level=logging.INFO)
     configure_listener_logging(args.listener_log)
+    label_path = args.frequency_labels
+    if label_path is None and args.config:
+        label_path = args.config.with_name("frequency-labels.txt")
     try:
-        frequency_labels = load_frequency_labels(args.config.with_name("frequency-labels.txt")) if args.config else None
+        frequency_labels = load_frequency_labels(label_path) if label_path else None
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
     app = create_app(config, demo=args.demo, frequency_labels=frequency_labels)
