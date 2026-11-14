@@ -52,6 +52,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 123.800,Gillespie Field (KSEE),Secondary Tower (Runway 17/35) / ZOA Skip,Local East County / night skip
 123.800,Local Airport,Gillespie Field (KSEE),Secondary Tower (Runway 17/35),East County split tower
 123.900,Local Airport,San Diego Intl (KSAN),Lindbergh Ground Control,Local Class B ground
+124.050,SoCal TRACON,SoCal Approach (LA Basin),KLAX Arrival Feeder (ANJLL / BIGBR / HLYWD STARs),LA basin arrival airborne
 124.350,SoCal TRACON,SoCal Approach (San Diego),San Diego East Approach & Departure,Primary local TRACON
 124.550,SoCal TRACON / High Desert,LAX 225-044 Arrivals / Antelope Sector,LA basin / High Desert airborne
 124.550,SoCal TRACON,SoCal Approach (LA/Joshua),LAX 225-044 Arrivals / Antelope Sector,LA basin / High Desert

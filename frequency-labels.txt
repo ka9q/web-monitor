@@ -42,6 +42,7 @@
 123.725 MHz = KMYF Clearance Delivery
 123.8 MHz = KSEE Tower Secondary North
 123.9 MHz = KSAN Ground
+124.05 MHz = SoCal LA Harbor/Downwind Arrival Feeder
 124.2 MHz = LA Center 7 Low Las Vegas/Mt Potosi NV
 124.3 MHz = LA Center/SoCal TRACON transitions
 124.35 MHz = SoCal Approach East
@@ -100,6 +101,7 @@
 130.225 MHz = United Airlines
 130.4 MHz = ARINC Enroute west
 130.375 MHz = MMTJ company and ramp dispatch
+130.575 MHz = MMTJ ramp operations domestic
 130.6 MHz = Signature Flight Support FBO
 130.7 MHz = ARINC Enroute Gulf of Mexico
 130.9 MHz = Spirit
