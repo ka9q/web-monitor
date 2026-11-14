@@ -142,6 +142,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 132.800,Terminal/En Route,KLAX / KSMO or ZAB,Discrete Terminal / Flight Check or ZAB Skip,High-altitude line-of-sight
 133.200,ARTCC En Route,Los Angeles Center (ZLA),Sector 39 High (Seligman AZ RCAG),High-altitude en route
 133.200,Los Angeles Center (ZLA),Sector 39 High (Seligman AZ RCAG),High-altitude en route
+133.250,ARTCC/Military,Albuquerque Center (ZAB) / ZOA / Offshore,En Route High Sectors or Offshore Discrete,High-altitude skip / discrete
 133.550,ARTCC En Route,Los Angeles Center (ZLA),Sector 37 High (Barstow/Riverside RCAG),High-altitude en route
 133.650,Joshua Approach / ZAB,High Desert / Edwards TRACON or ZAB Skip,High-altitude line-of-sight
 133.650,TRACON/En Route,Joshua Approach / ZAB,High Desert TRACON or ZAB Skip,High-altitude line-of-sight
