@@ -52,8 +52,16 @@
 128.6 MHz = LA Center Sector 9 Low-mid
 128.75 MHz = LA Center/Regional
 128.775 MHz = KNFG Camp Pendleton MCAS Tower
+128.9 MHz = ARINC Enroute southwest CONUS
 129.25 MHz = ARINC AOC
+129.40 MHz  ARINC Enroute great lakes/NE/Canada west coast
+129.45 MHz = ARINC central
 129.6 MHz = ARINC AOC
+130.4 MHz = ARINC Enroute west
+130.7 MHz = ARINC Enroute Gulf of Mexico
+131.175 MHz = ARINC Enroute SE
+131.8 MHz = ARINC Enroute NW
+131.95 MHz = ARINC extended range VHF SFO
 132.025 MHz = KRNM ATIS
 132.2 MHz = SoCal Approach North
 132.35 MHz = KSDM ATIS
