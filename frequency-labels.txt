@@ -60,6 +60,7 @@
 132.5 MHz = LA Center High Altitude
 132.85 MHz = LA Center northn/central transitions
 133.55 MHz = LA Center enroute
+133.475 MHz = KNKX ATIS
 134.35 MHz = SoCal TRACON/Regional
 134.8 MHz = KSAN ATIS
 135.1 MHz = KNZY NAS North island Tower
