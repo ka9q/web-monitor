@@ -19,7 +19,9 @@
 118.825 MHz = LA Center Sector 57 Seligman AZ
 119.0 MHz = KVNY Van Nuys Tower
 119.05 MHz = SoCal Approach Burbank/Van Nuys, Oxnard CTAF
+119.15 MHz = KSMO ATISf
 119.2 MHz = KMYF Montgomery Tower
+119.25 MHz = ?
 119.3 MHz = regional/military flight test
 119.4 MHz = KLBG Long Beach Tower 30 arrival/2 dep
 119.45 MHz = KSBD San Bernardino Tower/KFAT Fresno Approach
@@ -30,6 +32,7 @@
 120.05 MHz = LAX Ground Metering/Clearance Delivery
 120.15 MHz = KCRQ ATIS
 120.3 MHz = MMTJ Tijuana approach
+120.4 MHz = SoCal Approach Burbank/Van nuys
 120.6 MHz = KONT Ontario Tower
 120.65 MHz = KNRS Imperial Beach Tower
 120.7 MHz = KSEE Gillespie Tower
@@ -38,6 +41,7 @@
 121.3 MHz = SoCal KSNA Orange County/Coast Approach
 121.5 MHz = Guard/distress
 121.8 MHz = KCRQ Ground, KSBD Ground
+121.95 MHz = San Diego East County Practice air-to-air
 122.15 MHz = Flight Service San Diego/Riverside radio RCO
 122.2 MHz = Flight Service Station San Diego
 122.65 MHz = Flight Service Station San Diego
@@ -46,11 +50,13 @@
 122.75 MHz = Fixed-wing Air-to-air
 122.775 MHz = KSNA West Coast Charters/informal air-to-air
 123.025 MHz = Helicopter Air-to-air
+123.05 MHz = L18 Fallbrook KCPM Compton/Woodley CTAF/Unicom
 123.1 MHz = Search and Rescue
 123.45 MHz = Flight training
 123.5 MHz = KMYF FBO & Flight School Ops
 123.725 MHz = KMYF Clearance Delivery
 123.8 MHz = KSEE Tower Secondary North
+123.85 MHz = NorCal Approach Tracy/Livermore/Stockton
 123.9 MHz = KSAN Ground
 124.05 MHz = SoCal LA Harbor/Downwind Arrival Feeder
 124.1 MHz = KSNA Orange County/Coast Approach, KPHX approach
@@ -78,6 +84,7 @@
 126.125 MHz = KNKX approach
 126.2 MHz = KNRS Imperial Beach Navy helicopter
 126.35 MHz = LA Center Sector 4/Regional high altitude saddle peak/santa barbara
+126.45 MHz = KBFL Bakersfield Approach/Albuquerque center
 126.5 MHz = LA Center Sector 19 north & east
 126.525 MHz = LA Center Sector 25 High (Area A primary)
 126.7 MHz = LA Center enroute, SoCal terminal, Oakland center
@@ -125,10 +132,13 @@
 130.6 MHz = Signature Flight Support FBO
 130.7 MHz = ARINC Enroute Gulf of Mexico
 130.9 MHz = Spirit
+131.05 MHz = Alaska Airlines KSNA John Wayne
 131.175 MHz = ARINC Enroute SE
 131.2 MHz = Alaska Airlines
 131.35 MHz = American Airlines
+131.4 MHz = AOC ops
 131.575 MHz = Airline ops
+131.6 MHz = Atlantic Aviation KLAX/KVNY/KLGB/KSBD/KBFL
 131.675 MHz = Mercy air
 131.75 MHz = Sky West
 131.8 MHz = ARINC Enroute NW
@@ -140,6 +150,7 @@
 132.2 MHz = SoCal Approach North
 132.25 MHz = KSNA Ground West
 132.35 MHz = KSDM ATIS
+132.45 MHz = Albuquerque Sector 65 Phoenix ultra-high (FL350+)
 132.5 MHz = LA Center High Altitude
 132.6 MHz = LA Center 13 Low Ontario/Saddle Peak
 132.625 MHz = LA Center Sector 34 High (LAS area) Boulder City NV
@@ -153,6 +164,7 @@
 133.75 MHz = LA Center Sector 20 Low RIverside/Pleasants Peak
 133.9 MHz = LAX North Tower, SoCal Approach ILS monitor 24
 134.0 MHz = SoCal TRACON Empire/Banning Pass, March ARB
+134.2 MHz = SoCal Approach Burbank/Van Nuys KBUR/KVNY/
 134.35 MHz = SoCal TRACON/Regional
 134.475 MHz = LA Center Sector 60 Low Barstow
 134.55 MHz = Albuquerque Center/Oakland Center/KFLG Flagstaff
