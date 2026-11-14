@@ -4,6 +4,8 @@ import dataclasses
 import hashlib
 import ipaddress
 import math
+import re
+from decimal import Decimal
 import socket
 import struct
 import time
@@ -111,6 +113,28 @@ def parse_rtp(data):
     return AudioPacket(data[offset:end], timestamp, seq, ssrc, data[1] & 127)
 
 
+
+def load_frequency_labels(path):
+    labels = {}
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        return labels
+    for number, line in enumerate(lines, 1):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        frequency, separator, name = line.partition("=")
+        match = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)\s*(Hz|kHz|MHz)", frequency.strip(), re.I)
+        if not match or not separator or not name.strip():
+            raise ValueError(f"{path}:{number}: expected a line like 131.550 MHz = ACARS")
+        value, unit = match.groups()
+        hz = float(Decimal(value).scaleb({"hz": 0, "khz": 3, "mhz": 6}[unit.lower()]))
+        if not math.isfinite(hz) or hz in labels:
+            raise ValueError(f"{path}:{number}: invalid or duplicate frequency {frequency.strip()}")
+        labels[hz] = name.strip()
+    return labels
+
 class Channel:
     def __init__(self, group, source, ssrc, metadata=None):
         metadata = metadata or {}
@@ -119,7 +143,8 @@ class Channel:
         self.group_name = group.get('name', group['id'])
         self.source = source
         self.ssrc = ssrc
-        self.name = metadata.get('name', f'{self.group_name} · SSRC {ssrc}')
+        self.default_name = metadata.get('name', f'{self.group_name} · SSRC {ssrc}')
+        self.name = self.default_name
         self.frequency = metadata.get('frequency', '')
         self.frequency_hz = self.frequency if isinstance(self.frequency, (int, float)) else None
         self.status_seen = 0
@@ -165,8 +190,9 @@ class Channel:
 
 
 class Hub:
-    def __init__(self, config):
+    def __init__(self, config, frequency_labels=None):
         self.config = config
+        self.frequency_labels = frequency_labels or {}
         self.channels = {}
         # Expired channels disappear from the catalogue, but existing WebRTC
         # tracks may still reference them. Reuse those objects on return so a
@@ -202,6 +228,8 @@ class Hub:
                        self._definitions.get((group['id'], ssrc, None)))
             channel = self.retired.pop(key, None)
             self.channels[key] = channel if channel is not None else Channel(group, source, ssrc, metadata)
+            channel = self.channels[key]
+            channel.name = self.frequency_labels.get(channel.frequency_hz, channel.default_name)
         return self.channels[key]
 
     def prune_idle(self, now=None):
@@ -255,6 +283,7 @@ class Hub:
             if status.frequency_hz is not None:
                 channel.frequency_hz = status.frequency_hz
                 channel.frequency = format_frequency(status.frequency_hz)
+                channel.name = self.frequency_labels.get(channel.frequency_hz, channel.default_name)
 
     @staticmethod
     def endpoint(group):

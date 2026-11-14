@@ -17,7 +17,7 @@ from aiortc import (MediaStreamTrack, RTCConfiguration, RTCIceServer,
                     RTCPeerConnection, RTCRtpSender, RTCSessionDescription)
 from av import Packet
 from aiortc.codecs.opus import OpusEncoder
-from core import Hub, validate_config
+from core import Hub, load_frequency_labels, validate_config
 from discovery import OpusDiscovery, SourceNames, discovery_options, source_name_options
 
 ROOT = pathlib.Path(__file__).resolve().parent
@@ -146,12 +146,12 @@ async def same_origin(request, handler):
     return response
 
 
-def create_app(config, demo=False):
+def create_app(config, demo=False, frequency_labels=None):
     validate_config(config)
     discovery_config = discovery_options(config)
     names = SourceNames(source_name_options(config))
     app = web.Application(client_max_size=128 * 1024, middlewares=[same_origin])
-    hub = Hub(config)
+    hub = Hub(config, frequency_labels)
     sessions = {}
     app[HUB] = hub
     app[SESSIONS] = sessions
@@ -342,7 +342,11 @@ def main():
         tls.load_cert_chain(args.cert, args.key)
     logging.basicConfig(level=logging.INFO)
     configure_listener_logging(args.listener_log)
-    app = create_app(config, demo=args.demo)
+    try:
+        frequency_labels = load_frequency_labels(args.config.with_name("frequency-labels.txt")) if args.config else None
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+    app = create_app(config, demo=args.demo, frequency_labels=frequency_labels)
     web.run_app(app, host=args.listen or config.get('listen', '127.0.0.1'),
                 port=args.port or config.get('port', 8080), ssl_context=tls,
                 access_log=logging.getLogger('aiohttp.access') if args.access_log else None)

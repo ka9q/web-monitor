@@ -451,3 +451,19 @@ No service is automatically stopped, disabled, reloaded or restarted. Use the
 same PREFIX/BINDIR/LIBDIR/VENV/SYSTEMDUNITDIR overrides as at installation time.
 DESTDIR supports staged uninstall. The script refuses recursive removal of a
 VENV directory without pyvenv.cfg. Keep uninstall.py alongside the Makefile.
+
+### Frequency labels
+
+Create `frequency-labels.txt` in the same directory as the JSON file passed to
+`--config`. The file is optional and read at startup. Restart the monitor after
+editing it.
+
+```ini
+# Tuned frequency = display name
+131.550 MHz = ACARS
+136.975 MHz = VDL Mode 2
+```
+
+Use Hz, kHz, or MHz. The monitor matches the exact tuned frequency reported by
+radiod. A matching label takes precedence over the stream name. When the stream
+retunes to a frequency without a label, its usual name returns.

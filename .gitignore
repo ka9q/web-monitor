@@ -10,4 +10,6 @@ config.json
 debhelper-build-stamp
 debian/files
 debian/web-monitor
+#*#
+.#*
 
