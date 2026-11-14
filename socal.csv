@@ -1,0 +1,197 @@
+Frequency_MHz,Category,Facility,Role_Sector,Reception_Notes
+Frequency_MHz,Facility,Role_Sector,Reception_Type
+
+* **Local Two-Way Goldmines:** The **Laguna** (`119.950`, `125.650`, `128.150`, `128.600`) and **Julian** (`125.650`, `126.775`, `127.525`) ZLA RCAG sites sit on the mountains just east of San Diego—those are the en route frequencies where you will hear both the ground controller and the aircraft clearly.
+* **Military UHF Pairings:** If you ever expand your SDR sweep into the **225–400 MHz military UHF airband**, almost every ZLA sector and local tower in that table has a parallel UHF frequency that simulcasts the exact same controller audio.
+### Quick Tips for Merging with Your Database
+</FollowUp>
+<FollowUp>
+118.025,Regional Terminal / Discrete Ops,Distant Tower/Ground or Offshore Military Discrete,High-altitude skip / discrete
+118.025,Terminal/Military,Regional / Offshore Range,Distant Terminal or Military Discrete,High-altitude skip / discrete
+118.225,Local Airport,Montgomery-Gibbs (KMYF),Ground Control,Local surface / ramp
+118.225,Montgomery-Gibbs Exec (KMYF),Ground Control,Local (airborne / elevated ramp)
+118.300,Local Airport,San Diego Intl (KSAN),Lindbergh Tower (Primary),Local Class B tower
+118.750,Local Airport,North Island NAS (KNZY),Tower (VHF),Local military tower
+119.000,Regional Airport,Van Nuys (KVNY) / KTUS,Tower (East) or Regional Approach,Coastal inversion / skip
+119.000,Van Nuys (KVNY) / KTUS / KFAT,Tower (East) or Regional Approach,Coastal inversion / high-altitude
+119.050,SoCal TRACON,Burbank / Van Nuys (VNY) Approach/Departure,Airborne climb-out / descent
+119.050,SoCal TRACON,SoCal Approach (Burbank),Burbank / Van Nuys Approach & Departure,LA basin airborne traffic
+119.200,Local Airport,Montgomery-Gibbs (KMYF),Tower (North / Primary),Local Class D tower
+119.400,Long Beach Airport (KLGB),Tower (Runway 30 / 2),Coastal / inversion airborne
+119.400,Regional Airport,Long Beach Airport (KLGB),Tower (Runway 30 / 2),Coastal inversion airborne
+119.500,Cross-Border,Tijuana Intl (MMTJ),Tijuana Tower (Primary),Cross-border mesa line-of-sight
+119.600,SoCal TRACON,SoCal Approach (San Diego),San Diego West Approach & Departure,Primary local TRACON
+119.950,ARTCC En Route,Los Angeles Center (ZLA),Sector 30 Oceanic (Laguna RCAG),Local RCAG (two-way)
+120.050,Los Angeles Intl (KLAX),Ground Metering / Clearance Delivery,Airborne early call-in / ducting
+120.050,Regional Airport,Los Angeles Intl (KLAX),Ground Metering / Clearance Delivery,Airborne early call-in
+120.150,Local Airport,McClellan-Palomar (KCRQ),ATIS (Carlsbad),North County coastal mesa
+120.300,Cross-Border,Tijuana Intl (MMTJ),Tijuana Approach Control,Cross-border terminal
+120.650,Local Airport,Imperial Beach NOLF (KNRS),Ream Field Tower (VHF),South Bay military tower
+120.700,Local Airport,Gillespie Field (KSEE),Tower (Primary) & CTAF,East County Class D tower
+120.900,Local Airport,Oceanside Municipal (KOKB),CTAF / Unicom,North County coastal
+120.950,Regional Airport,Los Angeles Intl (KLAX) / SoCal,KLAX South Tower / ILS Monitor 25 (PM-1),Over-water coastal line-of-sight
+121.050,Local Airport,MCAS Miramar (KNKX),Ground Control (VHF),Local military ground
+121.250,Cross-Border,Tijuana Intl (MMTJ),Tijuana Ground Control,Cross-border surface
+121.500,Emergency/Guard,International Guard,VHF Emergency / Lost-Comms / Fallback,Local & regional guard
+121.500,International Guard / Emergency,VHF Emergency / Lost-Comms / Outage Fallback,Local & regional airborne/ground
+121.700,Local Airport,Gillespie Field (KSEE),Ground Control,East County surface
+121.800,Local Airport,McClellan-Palomar (KCRQ),Ground Control (Carlsbad),North County coastal mesa
+121.800,McClellan-Palomar (KCRQ),Ground Control (Carlsbad),North County coastal mesa
+121.900,Local Airport,MCAS Camp Pendleton (KNFG),Ground Control (VHF),North County military
+122.200,Flight Service,San Diego Radio (FSS),Montgomery RCO (Flight Service),Local FSS remote outlet
+122.725,Local Airport,Ramona Airport (KRNM),CTAF / Tower Closed,Inland foothill airport
+122.800,Local Airport,Borrego Valley (L08),CTAF / Unicom,East County desert
+122.950,Local FBO/Unicom,KSAN / KMYF / KCRQ,Unicom (General Aviation),Local airport advisory
+123.025,Helicopter/Air-Air,San Diego Area,Helicopter Air-to-Air / News / Tours,Local low-altitude rotorcraft
+123.050,Local Airport,Fallbrook Airpark (L18),CTAF / Unicom,North County general aviation
+123.500,Local FBO/Unicom,Crownair Aviation (KMYF),FBO Unicom / Flight School Ops,Local KMYF ramp
+123.725,Local Airport,Montgomery-Gibbs (KMYF),Clearance Delivery,Local IFR clearance
+123.725,Montgomery-Gibbs Exec (KMYF),Clearance Delivery,Local (airborne / elevated ramp)
+123.800,Gillespie Field (KSEE),Secondary Tower (Runway 17/35) / ZOA Skip,Local East County / night skip
+123.800,Local Airport,Gillespie Field (KSEE),Secondary Tower (Runway 17/35),East County split tower
+123.900,Local Airport,San Diego Intl (KSAN),Lindbergh Ground Control,Local Class B ground
+124.350,SoCal TRACON,SoCal Approach (San Diego),San Diego East Approach & Departure,Primary local TRACON
+124.550,SoCal TRACON / High Desert,LAX 225-044 Arrivals / Antelope Sector,LA basin / High Desert airborne
+124.550,SoCal TRACON,SoCal Approach (LA/Joshua),LAX 225-044 Arrivals / Antelope Sector,LA basin / High Desert
+124.600,Regional Terminal / ZLA / KFFZ,Distant Tower/Approach or En Route Skip,High-altitude line-of-sight
+124.600,Terminal/En Route,Regional / ZLA / KFFZ,Distant Tower/Approach or En Route Skip,High-altitude line-of-sight
+124.625,ARTCC En Route,Los Angeles Center (ZLA),Sector 16 (Mount Potosi NV RCAG),High-altitude en route
+124.625,Los Angeles Center (ZLA),Sector 16 (Mount Potosi NV RCAG),High-altitude en route
+125.100,Local Airport,Gillespie Field (KSEE),Clearance Delivery,East County IFR clearance
+125.150,SoCal TRACON,SoCal Approach (San Diego),San Diego South Bay / POGGI-ZZOOO Dep,Primary local TRACON
+125.200,SoCal TRACON (Malibu),LAX West / Northwest Departures,Coastal airborne climb-out
+125.200,SoCal TRACON,SoCal Approach (Malibu),LAX West / Northwest Departures,Coastal airborne climb-out
+125.300,SoCal TRACON,SoCal Approach (San Diego),San Diego North Approach (7000-15000 ft),Primary local TRACON
+125.350,SoCal TRACON (Coast / SLI),Orange County (KSNA) / Long Beach Approach,Coastal airborne traffic
+125.350,SoCal TRACON,SoCal Approach (Coast/SLI),Orange County (KSNA) / Long Beach App,Coastal airborne traffic
+125.450,Local Airport,Gillespie Field (KSEE),AWOS-3P Weather,East County automated weather
+125.500,SoCal TRACON (Pomona),Ontario (KONT) / San Gabriel Valley Approach,Inland Empire airborne traffic
+125.500,SoCal TRACON,SoCal Approach (Pomona),Ontario (KONT) / San Gabriel Valley App,Inland Empire airborne
+125.650,ARTCC En Route,Los Angeles Center (ZLA),Sector 12 Low (Laguna & Julian RCAGs),Local RCAG (two-way)
+125.700,Local Airport,Montgomery-Gibbs (KMYF),Tower (South / Runway 28L-10R),Local Class D tower
+125.725,ARTCC En Route,Los Angeles Center (ZLA),Sector 38 High (Barstow RCAG),High-altitude en route
+125.725,Los Angeles Center (ZLA),Sector 38 High (Barstow RCAG),High-altitude en route
+125.800,ARTCC En Route,Los Angeles Center (ZLA),Sector 04 Low (Northwest of LAX),High-altitude en route
+125.800,Los Angeles Center (ZLA),Sector 04 Low (Northwest of LAX),High-altitude en route
+125.900,Local Airport,San Diego Intl (KSAN),Lindbergh Clearance Delivery,Local Class B clearance
+126.125,Local/TRACON,MCAS Miramar (KNKX) / SoCal,Miramar Radar / Approach & Departure,Local military & civil radar
+126.125,MCAS Miramar (KNKX) / SoCal,Miramar Radar / Approach & Departure,Local military & civil radar
+126.350,ARTCC En Route,Los Angeles Center (ZLA),Sector 19 Low (Barstow RCAG),High-altitude en route
+126.525,ARTCC En Route,Los Angeles Center (ZLA),Sector 25 High / Area A Overnight Combined,High-altitude en route
+126.525,Los Angeles Center (ZLA),Sector 25 High / Area A Overnight Combined,High-altitude en route
+126.700,SoCal TRACON (Empire) / ZLA,Springs (3S) Sector / En Route Skip,Inland Empire / high-altitude
+126.700,SoCal TRACON,SoCal Approach (Empire),Springs (3S) Sector / En Route Skip,Inland Empire / high-altitude
+126.775,ARTCC En Route,Los Angeles Center (ZLA),Sector 31 High (Julian RCAG),Local RCAG (two-way)
+126.800,John Wayne / Orange County (KSNA),Tower (Runways 20R/2L),Over-water coastal line-of-sight
+126.800,Regional Airport,John Wayne / Orange Co (KSNA),Tower (Runways 20R/2L),Over-water coastal line-of-sight
+126.900,Local Airport,Montgomery-Gibbs (KMYF),ASOS Automated Weather,Local automated weather
+127.000,SoCal TRACON (Empire),Ontario (KONT) / San Bernardino Approach,Inland Empire airborne traffic
+127.000,SoCal TRACON,SoCal Approach (Empire),Ontario (KONT) / San Bernardino App,Inland Empire airborne
+127.100,ARTCC En Route,Los Angeles Center (ZLA),Sector 03 Low (Bakersfield RCAG),High-altitude en route
+127.100,Los Angeles Center (ZLA),Sector 03 Low (Bakersfield RCAG),High-altitude en route
+127.200,Local Airport,McClellan-Palomar (KCRQ),Tower (Carlsbad),North County Class D tower
+127.300,SoCal TRACON,SoCal Approach (San Diego),Del Mar 1 / Coastal Corridor,Local TRACON sector
+127.525,ARTCC En Route,Los Angeles Center (ZLA),Sector 40 High (Julian RCAG),Local RCAG (two-way)
+127.900,Cross-Border,Tijuana Intl (MMTJ),ATIS (Tijuana Automated Weather),Cross-border mesa line-of-sight
+128.075,ARTCC En Route,Los Angeles Center (ZLA),Sector 39 (Peach Springs AZ RCAG),High-altitude en route
+128.075,Los Angeles Center (ZLA),Sector 39 (Peach Springs AZ RCAG),High-altitude en route
+128.100,SoCal TRACON,SoCal Approach (San Diego),PLYYA Arrival Sector,Local TRACON sector
+128.150,ARTCC En Route,Los Angeles Center (ZLA),Sector 10 Low (Laguna RCAG),Local RCAG (two-way)
+128.250,Local Airport,Brown Field Municipal (KSDM),Tower (Otay Mesa),South Bay Class D tower
+128.450,SoCal TRACON (LA Basin),Santa Monica / LAX North Corridor,LA basin airborne traffic
+128.450,SoCal TRACON,SoCal Approach (LA Basin),Santa Monica / LAX North Corridor,LA basin airborne traffic
+128.600,ARTCC En Route,Los Angeles Center (ZLA),Sector 09 Low (Laguna RCAG),Local RCAG (two-way)
+128.750,Local Airport,MCAS Camp Pendleton (KNFG),Tower (VHF),North County military tower
+129.250,Airline Ops,Southwest Airlines (SWA),Station Operations (KSAN),Local KSAN airline ops
+129.500,Airline Ops,United Airlines (UAL),Station Operations (KSAN),Local KSAN airline ops
+129.775,Local Airport,San Diego Intl (KSAN),Terminal 2 & West Ramp Control,Local Lindbergh Field ramp
+129.775,San Diego Intl (KSAN),Terminal 2 & West Ramp Control,Local Lindbergh Field ramp
+129.875,Airline Ops,Sun Country Airlines (SCX),Station Operations (KSAN),Local KSAN airline ops
+129.950,Airline Ops,Alaska / Legacy VRD Ops,Station Operations (KSAN),Local KSAN airline ops
+129.975,Local FBO,Landmark / Atlantic Aviation,FBO Ramp Operations (KSAN),Local KSAN FBO ops
+130.000,Local FBO,Western Flight Services,FBO Ramp Operations (KCRQ),North County FBO ops
+130.100,Airline Ops,Delta Air Lines (DAL),Station Operations (LA/OC/Regional),Airborne arrival call-in
+130.100,Delta Air Lines Operations,Airline Station Operations (AOC / ARINC),Airborne arrival call-in (LA/OC)
+130.225,Airline Ops,United Airlines (UAL),Line Maintenance & Technical Ops,Local KSAN / LA arrival call-in
+130.225,United Airlines Maintenance,Line Maintenance & Technical Ops (AOC),Local KSAN / LA arrival call-in
+130.250,Airline Ops,SkyWest Airlines (SKW),Station Operations (KSAN),Local KSAN airline ops
+130.375,Cross-Border Ops,Tijuana Intl (MMTJ) Airlines,Mexican Airline Ops / Ramp (Spanish),Cross-border mesa line-of-sight
+130.375,Tijuana Intl (MMTJ) Ops,Mexican Airline Operations / Ramp (Spanish),Cross-border mesa line-of-sight
+130.600,Local FBO,Signature Flight Support,Corporate / Private FBO Ops (KSAN/LA),Local KSAN / regional FBO ops
+130.600,Signature Flight Support FBO,Corporate / Private FBO Ramp Operations,Local KSAN / regional FBO ops
+130.900,Airline Ops,Spirit Airlines (NKS),Station Operations (KSAN),Local KSAN airline ops
+131.200,Airline Ops,Alaska Airlines (ASA),Station Operations (KSAN / KLAX),Local KSAN arrival call-in
+131.200,Alaska Airlines Operations,Airline Station Operations (AOC / ARINC),Local KSAN arrival call-in
+131.350,Airline Ops,American Airlines (AAL),Station Operations (KSAN / KLAX),Local KSAN / LA arrival call-in
+131.350,American Airlines Operations,Airline Station Operations (AOC / ARINC),Local KSAN / LA arrival call-in
+131.575,Airline Ops,Commercial Airline Ops,Station Operations / Dispatch (AOC),Airborne arrival call-in
+131.575,Commercial Airline Operations,Station Operations / Dispatch (AOC / ARINC),Airborne arrival call-in
+131.675,Air Medical,Mercy Air / Air Methods,Air Ambulance Dispatch / Flight Following,Local & regional air medical
+131.750,Airline Ops,SkyWest / Regional Ops,Station Operations (KSAN),Local KSAN airline ops
+131.975,Local Airport,San Diego Intl (KSAN),Terminal 1 Ramp Control,Local Lindbergh Field ramp
+132.000,Airline Ops,Horizon Air (QXE),Station Operations (KSAN),Local KSAN airline ops
+132.150,ARTCC En Route,Los Angeles Center (ZLA),Sector 28 Oceanic (Santa Barbara RCAG),High-altitude offshore jets
+132.150,Los Angeles Center (ZLA),Sector 28 Oceanic (Santa Barbara RCAG),High-altitude offshore jets
+132.350,Local Airport,Brown Field Municipal (KSDM),ATIS (Otay Mesa),South Bay automated weather
+132.625,ARTCC En Route,Los Angeles Center (ZLA),Sector 34 High (Las Vegas / East Corridor),High-altitude en route
+132.625,Los Angeles Center (ZLA),Sector 34 High (Las Vegas / Eastern Corridor),High-altitude en route
+132.800,KLAX / KSMO Terminal or ZAB,Discrete Terminal / Flight Check or ZAB Skip,High-altitude line-of-sight
+132.800,Terminal/En Route,KLAX / KSMO or ZAB,Discrete Terminal / Flight Check or ZAB Skip,High-altitude line-of-sight
+133.200,ARTCC En Route,Los Angeles Center (ZLA),Sector 39 High (Seligman AZ RCAG),High-altitude en route
+133.200,Los Angeles Center (ZLA),Sector 39 High (Seligman AZ RCAG),High-altitude en route
+133.550,ARTCC En Route,Los Angeles Center (ZLA),Sector 37 High (Barstow/Riverside RCAG),High-altitude en route
+133.650,Joshua Approach / ZAB,High Desert / Edwards TRACON or ZAB Skip,High-altitude line-of-sight
+133.650,TRACON/En Route,Joshua Approach / ZAB,High Desert TRACON or ZAB Skip,High-altitude line-of-sight
+133.900,Los Angeles Intl (KLAX) / SoCal,KLAX North Tower / ILS Monitor 24 (PM-2),Over-water coastal line-of-sight
+133.900,Regional Airport,Los Angeles Intl (KLAX),KLAX North Tower / ILS Monitor 24 (PM-2),Over-water coastal line-of-sight
+134.000,SoCal TRACON (Empire),Banning Pass / San Gorgonio Corridor,High-terrain pass / en route
+134.000,SoCal TRACON,SoCal Approach (Empire),Banning Pass / San Gorgonio Corridor,High-terrain pass / en route
+134.550,ARTCC/Military,Albuquerque Center (ZAB) / Offshore Discrete,En Route High Sectors or Military Range Discrete,High-altitude skip / discrete
+134.650,ARTCC En Route,Los Angeles Center (ZLA),Sector 06 Low (Barstow RCAG),High-altitude en route
+134.650,Los Angeles Center (ZLA),Sector 06 Low (Barstow RCAG),High-altitude en route
+134.800,Local Airport,San Diego Intl (KSAN),D-ATIS (Automated Weather & Runway Info),Local Class B ATIS
+134.850,Local Airport,McClellan-Palomar (KCRQ),Clearance Delivery (Carlsbad),North County airborne / mesa
+134.850,McClellan-Palomar (KCRQ),Clearance Delivery (Carlsbad),North County airborne / mesa
+135.150,Albuquerque Center (ZAB),Western / Central Arizona High Sectors,High-altitude en route
+135.150,ARTCC En Route,Albuquerque Center (ZAB),Western / Central Arizona High Sectors,High-altitude en route
+135.200,Local Airport,MCAS Miramar (KNKX),Miramar Tower (VHF Primary),Local military tower
+135.250,ARTCC En Route,Los Angeles Center (ZLA),Sector 33 High (Grand Canyon AZ RCAG),High-altitude en route
+135.275,MCAS Miramar / SoCal (Empire),Military Tactical Discrete or Desert (3D) Sector,Local military / Empire sector
+135.275,Military/TRACON,MCAS Miramar / SoCal (Empire),Military Tactical Discrete or Desert (3D),Local military / Empire sector
+135.300,ARTCC En Route,Los Angeles Center (ZLA),Sector 26 High (Lebec RCAG),High-altitude en route
+135.300,Los Angeles Center (ZLA),Sector 26 High (Lebec RCAG),High-altitude en route
+136.500,Airline Ops,JetBlue Airways (JBU),Station Operations (KSAN),Local KSAN airline ops
+
+VHF_MHz,UHF_MHz,Sector,Stratum,RCAG_Sites,Reception_From_KNKX
+118.825,236.825,Sector 57,High,Seligman AZ,Airborne only (high-altitude skip)
+119.050,269.500,Sector 15,Low/SBA App,Santa Barbara / San Luis Obispo CA,Airborne only (coastal / shared w/ SoCal)
+119.950,277.400,Sector 30,Oceanic,Laguna / Pleasants Peak CA,Two-way (local Laguna RCAG)
+124.200,256.800,Sector 07,Low,Las Vegas / Mount Potosi NV,Airborne only (high-altitude skip)
+124.625,377.100,Sector 16,Low/High,Mount Potosi NV / Keeler CA,Airborne only (high-altitude skip)
+124.850,319.200,Sector 08,Low,Seligman AZ,Airborne only (high-altitude skip)
+125.275,351.700,Sector 18,Low,Pleasants Peak / Ontario CA,Airborne / weak ground
+125.650,346.400,Sector 12,Low,Laguna / Julian CA,Two-way (local Laguna/Julian RCAGs)
+125.725,351.900,Sector 38,High (Daggett),Barstow CA,Airborne only (high-altitude skip)
+125.800,269.400,Sector 04,Low,Saddle Peak / Santa Barbara CA,Airborne only (coastal line-of-sight)
+126.350,290.200,Sector 19,Low,Barstow / Riverside CA,Airborne only (high-altitude skip)
+126.525,346.300,Sector 25,High / Area A Master,Santa Barbara / Bakersfield CA,Airborne only (overnight combined master)
+126.775,307.800,Sector 31,High,Julian CA / Yuma AZ,Two-way (local Julian RCAG)
+127.100,317.700,Sector 03,Low,Bakersfield CA,Airborne only (high-altitude skip)
+127.350,346.300,Sector 36,High,Palmdale / Bakersfield CA,Airborne only (high-altitude skip)
+127.525,371.850,Sector 40,High (Thermal),Julian / Blythe / Palm Springs CA,Two-way (local Julian RCAG)
+128.075,323.200,Sector 35,High (Peach Springs),Peach Springs AZ,Airborne only (high-altitude skip)
+128.150,285.600,Sector 10,Low,Laguna CA,Two-way (local Laguna RCAG)
+128.375,263.000,Sector 27,High,Ontario / Whittier CA,Airborne only (high-altitude skip)
+128.600,291.700,Sector 09,Low,Laguna CA,Two-way (local Laguna RCAG)
+132.150,338.300,Sector 28,Oceanic,Santa Barbara / San Luis Obispo CA,Airborne only (offshore high-altitude)
+132.600,285.400,Sector 13,Low,Ontario / Saddle Peak CA,Airborne only (LA basin / mountain)
+132.625,352.050,Sector 34,High (Boulder City),Nelson / Mount Potosi NV,Airborne only (high-altitude skip)
+132.850,322.400,Sector 21,Low,Baldwin Hills / Pleasants Peak CA,Airborne only (LA basin line-of-sight)
+133.200,348.650,Sector 39,High (Parker),Seligman AZ / Blythe CA,Airborne only (high-altitude skip)
+133.550,279.600,Sector 37,High (Hector),Barstow / Twentynine Palms CA,Airborne only (high-altitude skip)
+133.750,319.100,Sector 20,Low,Riverside / Pleasants Peak CA,Airborne only (Inland Empire)
+134.475,269.050,Sector 60,High (Blythe),Blythe CA / Yuma AZ,Airborne only (high-altitude skip)
+134.650,360.650,Sector 06,Low,Barstow CA,Airborne only (high-altitude skip)
+135.250,257.675,Sector 33,High (Bryce Canyon),Grand Canyon AZ / Cedar City UT,Airborne only (far-edge skip)
+135.300,372.000,Sector 26,High,Lebec / Palmdale CA,Airborne only (high-altitude skip)
+135.550,299.200,Sector 32,High,Seligman AZ / Nelson NV,Airborne only (high-altitude skip)
