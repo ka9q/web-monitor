@@ -122,6 +122,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 130.375,Tijuana Intl (MMTJ) Ops,Mexican Airline Operations / Ramp (Spanish),Cross-border mesa line-of-sight
 130.600,Local FBO,Signature Flight Support,Corporate / Private FBO Ops (KSAN/LA),Local KSAN / regional FBO ops
 130.600,Signature Flight Support FBO,Corporate / Private FBO Ramp Operations,Local KSAN / regional FBO ops
+130.750,Airline/FBO Ops,Commercial Airline / FBO AOC (ARINC),Station Operations & Ramp Dispatch,Coastal & high-altitude arrival call-in
 130.900,Airline Ops,Spirit Airlines (NKS),Station Operations (KSAN),Local KSAN airline ops
 131.200,Airline Ops,Alaska Airlines (ASA),Station Operations (KSAN / KLAX),Local KSAN arrival call-in
 131.200,Alaska Airlines Operations,Airline Station Operations (AOC / ARINC),Local KSAN arrival call-in

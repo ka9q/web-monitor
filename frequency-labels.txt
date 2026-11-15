@@ -53,6 +53,7 @@
 122.8 MHz = Common Unicom / L08 Borrego Valley CTAF
 122.85 MHz = Southern LA VFR corridor reporting/KSMO noise mgmt
 122.9 MHz = Multicom L78 Jacumba/L90 Ocotillo
+122.95 MHz = Unicom KMYF/KSEE/KSAN
 123.025 MHz = Helicopter Air-to-air
 123.05 MHz = L18 Fallbrook KCPM Compton/Woodley CTAF/Unicom
 123.1 MHz = Search and Rescue
@@ -147,6 +148,7 @@
 130.575 MHz = MMTJ ramp operations domestic
 130.6 MHz = Signature Flight Support FBO
 130.7 MHz = ARINC Enroute Gulf of Mexico
+130.75 MHz = AOC 
 130.9 MHz = Spirit
 131.05 MHz = Alaska Airlines KSNA John Wayne
 131.175 MHz = ARINC Enroute SE
@@ -160,6 +162,7 @@
 131.675 MHz = Mercy air
 131.75 MHz = Sky West
 131.8 MHz = ARINC Enroute NW
+131.925 - Federal Express Ops
 131.95 MHz = ARINC extended range VHF SFO
 131.975 MHz = KSAN Terminal 1 East Ramp control
 132.0 MHz = Horizon Air

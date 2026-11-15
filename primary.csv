@@ -131,6 +131,7 @@ Freq_MHz,Category,Facility,Function,Reception_Note
 130.425,Digital Data,ACARS (Legacy MSK),North American ACARS Data Channel (Mute),Digital data burst
 130.450,Digital Data,ACARS (Legacy MSK),North American ACARS Data Channel (Mute),Digital data burst
 130.575,Cross-Border Ops,Tijuana Intl (MMTJ) Airlines,Mexican Airline Ops / Ground Handling (Spanish),Cross-border mesa
+130.750,Airline/FBO Ops,Commercial Airline / FBO AOC (ARINC),Station Operations & Ramp Dispatch (25 kHz below Delta 130.775),Coastal & high-altitude arrival call-in
 131.050,Airline Ops,Alaska Airlines (ASA),Station Operations (KSNA Orange County),Over-water coastal
 131.125,Digital Data,ACARS (Legacy MSK),North American ACARS Data Channel (Mute),Digital data burst
 131.200,Local Airline Ops,Alaska Airlines (ASA),Station Operations (KSAN / KLAX),Local KSAN arrival
@@ -143,6 +144,7 @@ Freq_MHz,Category,Facility,Function,Reception_Note
 131.600,Local/Regional FBO,Atlantic Aviation Services FBO,Executive FBO Ramp Support (KLAX/KVNY/KLGB),Coastal business jets
 131.725,Digital Data,ACARS (Legacy MSK),North American Overflow ACARS Data (Mute),Digital data burst
 131.800,Local Airline Ops,Delta Air Lines (DAL),Station Operations (KSAN / KLAX),Local KSAN arrival
+131.925,Local Airline Ops,FedEx Express (FDX),FedEx Station Operations (KSAN / KLAX / KONT),Local KSAN cargo & coastal arrival
 132.025,Local Airport,Brown Field Municipal (KSDM) ATIS,KSDM Automated Weather,South County local
 132.150,ARTCC En Route,Los Angeles Center (ZLA),Sector 28 Oceanic (Santa Barbara / SLO),Offshore high-altitude
 132.250,Regional Airport,John Wayne / Orange Co (KSNA),KSNA Ground West (0615-2300 Local),Coastal ducting
