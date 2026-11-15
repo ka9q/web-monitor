@@ -1,0 +1,14 @@
+### Layer 2: Fallback Band-Plan Classifier (For Any Other 25 kHz Bin)
+If a frequency isn't in the CSV above, your software can auto-tag it by range—and if an adjacent channel in Layer 1 fired at the exact same timestamp, you immediately know it's ±25/50 kHz bleed or a pilot knob slip:
+
+| Start_MHz | End_MHz | Default_Category | Default_Description |
+| :--- | :--- | :--- | :--- |
+| `118.000` | `121.400` | `Terminal ATC` | Unmapped Tower / TRACON / ATIS (High-Altitude Skip or Bleed) |
+| `121.600` | `121.925` | `Surface ATC` | Airport Ground / Ramp / Metering (Coastal Ducting or Bleed) |
+| `121.950` | `123.075` | `FSS / CTAF / GA` | Flight Service RCO / Non-Towered CTAF / Unicom / Air-to-Air |
+| `123.125` | `123.575` | `Flight Test / Training` | FCC Part 87 Flight Test / Flight School / Soaring |
+| `123.600` | `128.800` | `ARTCC / TRACON` | En Route High/Low Sector or Regional TRACON (Skip / Bleed) |
+| `128.825` | `132.000` | `AOC Company Ops` | Airline Station Operations / FBO Dispatch / ARINC |
+| `132.025` | `136.475` | `Upper ARTCC / ATC` | High-Altitude En Route Sector / Regional ATC (Skip / Bleed) |
+| `136.500` | `136.975` | `AOC / VDL2 Data` | Airline Expansion Ops or VDL Mode 2 Digital Data |
+

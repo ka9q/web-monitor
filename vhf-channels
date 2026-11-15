@@ -1,0 +1,62 @@
+The 108.000–137.000 MHz VHF aviation band is divided by FAA and FCC band plans into specific functional blocks rather than random assignments.
+Here is the exact structural breakdown of the entire VHF airband—including where Company/ARINC, ACARS, VDL Mode 2, Guard, Flight Service, and ATC live.
+
+1. Navigation Band: 108.000 – 117.975 MHz
+
+• 108.000 – 111.950 MHz (Even tenths = VOR, Odd tenths = ILS Localizer): Frequencies with an even first decimal (e.g., 108.20, 110.40) are terminal VORs; odd first decimals (108.10, 109.50) are ILS Localizers.
+• 112.000 – 117.950 MHz: En route VOR / VORTAC navigation aids and GBAS (Ground-Based Augmentation System) differential GPS data links.
+
+2. Air Traffic Control & General Aviation: 118.000 – 128.800 MHz
+
+While ATC assignments overlap somewhat across the band, the FAA partitions this block into distinct operational sub-bands:
+• 118.000 – 121.400 MHz (Terminal ATC — Tower, Ground, Clearance, Approach): Primarily local Airport Traffic Control Towers (ATCT), Ground Control, Clearance Delivery, ATIS, and terminal TRACON sectors.
+• 121.500 MHz (Emergency Guard): Protected international aeronautical emergency, distress, and lost-comms frequency (with buffer guard bands on 121.475 and 121.525).
+• 121.600 – 121.925 MHz (Airport Surface / Ground Control): Dedicated low-power surface movement frequencies (Ground Control, Ramp Metering, Pre-Taxi Clearance) designed for short-range reuse at nearby airports.
+• 121.950 – 123.075 MHz (Flight Service, Unicom, Multicom & General Aviation):
+	• 122.000 – 122.050 MHz: En Route Flight Advisory Service (EFAS / Flight Watch — legacy weather).
+	• 122.100 – 122.650 MHz: Flight Service Station (FSS) Remote Communications Outlets (RCOs) for flight plans and weather briefings.
+	• 122.700 – 123.075 MHz: Non-towered airport CTAF/Unicom (122.700, 122.725, 122.800, 122.950, 123.000, 123.050), air-to-air (122.750 fixed-wing, 123.025 helicopter), and Multicom (122.900).
+• 123.100 MHz (Search & Rescue / SAR): Protected national SAR scene-of-action and USCG/Civil Air Patrol coordination frequency.
+• 123.125 – 123.575 MHz (Flight Test, Aviation Instruction & Gliders): Aircraft manufacturer flight testing (123.150–123.550), flight school operational channels, and sailplane/glider air-to-air (123.300, 123.500).
+• 123.600 – 128.800 MHz (TRACON & ARTCC En Route ATC): Heavily populated by terminal approach/departure radar sectors and Air Route Traffic Control Center (ARTCC) low/high altitude sectors, alongside a few local towers and ATIS broadcasts.
+
+3. Aeronautical Operational Control (AOC) — Company & ARINC: 128.825 – 132.000 MHz
+
+This entire 3.175 MHz block is reserved exclusively for airline company operations, dispatch, FBOs, and ARINC/SITA data & voice relays—never FAA air traffic control. Inside this block, channels are split between voice and digital data:
+• 128.825 – 128.975 MHz (ARINC Domestic En Route Voice): High-power regional network stations (like 128.900 MHz San Francisco Radio that you logged) providing long-range phone patches, MedLink medical calls, and dispatch relays.
+• 129.000 – 132.000 MHz (Airline Company Voice & FBO Ops): Assigned to individual airlines (American, Delta, United, Southwest, Alaska, JetBlue, SkyWest, etc.) and major FBOs (Signature, Atlantic) for local station operations, ramp control, gate coordination, and line maintenance.
+• Embedded ACARS & VDL Mode 2 Data Channels (Inside 129–136 MHz): Because your custom SDR skips ACARS, here are the exact digital data channels embedded inside and just above this band in North America so you can keep them permanently notched/ignored in your channelizer:
+	• Legacy ACARS (2400 bps MSK AM):
+		• 131.550 MHz — Primary North American ACARS channel
+		• 130.025 MHz — Secondary North American ACARS channel
+		• 129.125 MHz — Additional North American ACARS channel
+		• 130.425 MHz / 130.450 MHz — Additional North American ACARS channels
+		• 131.125 MHz / 131.725 MHz — Additional / overflow ACARS channels
+	• Newer VDL Mode 2 (31.5 kbps D8PSK — CPDLC & High-Speed ACARS):
+		• 136.975 MHz — Worldwide VDL Mode 2 Common Signaling Channel (CSC)
+		• 136.650 MHz — North American ARINC VDL Mode 2 primary
+		• 136.800 MHz — North American SITA VDL Mode 2 primary
+
+4. Upper ATC & Digital Expansion Band: 132.025 – 136.975 MHz
+
+• 132.025 – 135.975 MHz (ARTCC High/Low Sectors & Terminal ATC): Primarily dedicated to high-altitude and low-altitude en route Air Route Traffic Control Center sectors, along with busy terminal approach sectors, ATIS broadcasts (like KSAN 134.800), and occasional military discrete channels.
+• 136.000 – 136.475 MHz (ATC / Special Use): Reserved for terminal ATC, ATIS, and specialized aviation services.
+• 136.500 – 136.975 MHz (AOC Expansion & VDL Mode 2 Data): The top 500 kHz of the airband was opened later and is split between additional airline company voice channels (like JetBlue on 136.500 MHz) and the high-speed VDL Mode 2 digital data channels (136.650, 136.800, 136.975 MHz).
+
+Quick Band-Plan Reference Table
+
+
+Frequency Range (MHz)	Primary Allocation	Typical Users
+108.000 – 117.975	Radionavigation	ILS Localizers, VOR / VORTAC, GBAS
+118.000 – 121.400	Terminal ATC	Control Towers, Approach/Departure, ATIS
+121.500	Emergency Guard	International Aeronautical Distress & Intercepts
+121.600 – 121.925	Surface ATC	Airport Ground Control, Clearance, Metering
+121.950 – 123.075	FSS / Unicom / GA	Flight Service (RCO), CTAF, Unicom, Helicopters
+123.100	Search & Rescue	National SAR Scene-of-Action
+123.125 – 123.575	Flight Test / Schools	Manufacturer Flight Test, Flight Training, Gliders
+123.600 – 128.800	En Route & TRACON	ARTCC Low/High Sectors, TRACON, Towers
+128.825 – 132.000	Company & ARINC (AOC)	Airline Ops, Ramp Control, FBOs, ARINC Voice & ACARS
+132.025 – 136.475	Upper ATC	ARTCC High/Low Sectors, Terminal ATC, ATIS
+136.500 – 136.975	AOC & Digital Data	Extra Airline Ops (136.500) + VDL Mode 2 (136.650–136.975)
+
+If you'd like to feed that band-plan structure straight into your custom software as a default category classifier (so any unmapped 25 kHz bin automatically gets tagged with its probable FAA/FCC allocation block before you even listen to it), I can format those exact ranges into a JSON or CSV lookup table for you!

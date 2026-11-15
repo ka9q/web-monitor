@@ -90,6 +90,7 @@
 125.725 MHz = LA Center Sector 38 High Daggett/Barstow
 125.8 MHz = LA Center Sector 4 Low (Northwest of LAX)
 125.9 MHz = KSAN clearance delivery
+126.075 MHz = ?
 126.125 MHz = KNKX Miramar approach
 126.2 MHz = KNRS Imperial Beach Navy helicopter
 126.325 MHz = ?

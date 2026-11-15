@@ -1,0 +1,16 @@
+Yes—it is called GBAS (Ground-Based Augmentation System), and in the U.S. the FAA originally called it LAAS (Local Area Augmentation System).
+While WAAS broadcasts wide-area GPS corrections from geostationary satellites (down to LPV/CAT I minimums), GBAS sits right on the airport grounds and broadcasts local differential GPS corrections and final approach path geometry over VHF in the 108.025–117.950 MHz navigation band.
+
+How GBAS / LAAS Works on VHF
+
+• Why it exists: Even with WAAS, satellite-based augmentation cannot reliably support Category II / Category III zero-visibility autolandings at major hubs because ionospheric disturbances and localized multipath errors vary too much over a continent. Putting three or four surveyed GPS reference receivers right on the airport fixes that local error down to sub-meter accuracy.
+• The RF Signal (VHF Data Broadcast - VDB):
+	• Frequency Band: 108.025–117.950 MHz (25 kHz spacing, tucked directly between VOR and ILS channels).
+	• Modulation: D8PSK (Differential 8-Phase Shift Keying) at 31.5 kbps—the exact same physical layer modulation used by VDL Mode 2 up in the 136 MHz band, using TDMA (Time-Division Multiple Access) slots so multiple runways/approaches can share a frequency.
+	• Range: Designed for a ~23-nautical-mile terminal service volume around the airport.
+• Cockpit Integration (GLS — GBAS Landing System): In the cockpit, pilots tune a 5-digit GLS Channel Number (e.g., 20541) instead of a frequency, which automatically tunes the multi-mode receiver (MMR) to the right VHF VDB frequency and TDMA slot—presenting the exact same localizer and glideslope needles on the flight display as a traditional ILS, except a single GBAS ground station on the field can serve every runway end at the airport simultaneously (up to 48 approaches) without needing separate localizer and glideslope arrays at the end of each runway.
+
+Where It's Running in the U.S.
+
+It is deployed at several major hubs—including Newark (KEWR), Houston Intercontinental (KIAH), San Francisco (KSFO), and Moses Lake (KMWH)—as well as major international airports in Europe, Australia, and Asia, though neither KSAN nor KLAX has an active public GBAS installation yet.
+If you ever point your SDR down into the 108–118 MHz navband out of curiosity, you can actually watch VOR 30 Hz AM/FM subcarriers, ILS 90/150 Hz tone-balance lobes, and GBAS TDMA bursts on your waterfall! Drop another frequency from your airband sweep whenever you're ready.
