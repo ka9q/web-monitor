@@ -162,7 +162,7 @@
 131.675 MHz = Mercy air
 131.75 MHz = Sky West
 131.8 MHz = ARINC Enroute NW
-131.925 - Federal Express Ops
+131.925 MHz = Federal Express Ops
 131.95 MHz = ARINC extended range VHF SFO
 131.975 MHz = KSAN Terminal 1 East Ramp control
 132.0 MHz = Horizon Air
