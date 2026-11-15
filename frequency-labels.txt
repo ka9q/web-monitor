@@ -51,9 +51,11 @@
 122.75 MHz = Fixed-wing Air-to-air
 122.775 MHz = KSNA West Coast Charters/informal air-to-air
 122.8 MHz = Common Unicom / L08 Borrego Valley CTAF
+122.825 MHz = Air taxi
 122.85 MHz = Southern LA VFR corridor reporting/KSMO noise mgmt
 122.9 MHz = Multicom L78 Jacumba/L90 Ocotillo
 122.95 MHz = Unicom KMYF/KSEE/KSAN
+123.0 MHz = KOKB Oceanside Unicom
 123.025 MHz = Helicopter Air-to-air
 123.05 MHz = L18 Fallbrook KCPM Compton/Woodley CTAF/Unicom
 123.1 MHz = Search and Rescue
