@@ -16,6 +16,7 @@
 118.225 MHz = KMYF Ground
 118.3 MHz = KSAN Lindbergh Tower
 118.6 MHz = KCRQ McClellan-Palomar Tower
+118.8 MHz = KEMT San Gabriel Valley Tower/KSBA Approach
 118.825 MHz = LA Center Sector 57 Seligman AZ
 119.0 MHz = KVNY Van Nuys Tower
 119.05 MHz = SoCal Approach Burbank/Van Nuys, Oxnard CTAF
@@ -27,6 +28,7 @@
 119.4 MHz = KLBG Long Beach Tower 30 arrival/2 dep
 119.45 MHz = KSBD San Bernardino Tower/KFAT Fresno Approach
 119.6 MHz = SoCal Approach West
+119.75 MHz = ?
 119.875 MHz = KRNM Ramona Tower
 119.9 MHz = KSNA general aviation runway 02R/20L
 119.95 MHz = LA Center Sector 30 Oceanic
@@ -62,6 +64,7 @@
 123.35 MHz = Flight Test
 123.45 MHz = Flight training
 123.5 MHz = KMYF FBO & Flight School Ops
+123.55 MHz = Flight schools, glider, lighter-than-air
 123.725 MHz = KMYF Clearance Delivery
 123.75 MHz = ?
 123.8 MHz = KSEE Tower Secondary North
@@ -116,6 +119,7 @@
 127.5 MHz = SoCal Approach LA Pacific/Offshore & Coastal
 127.525 MHz = LA Center Sector 40 High Altitude Thermal/Julian/Blythe
 127.55 MHz = Albuquerque Center/Salt Lake Center/Oakland Center
+127.65 MHz = SoCal Approach LA North/Burbank/High Desert
 127.7 MHz = KLGB ATIS
 128.075 MHz = LA Center Sector 35 High Peach Springs AZ/Albuquerque/Oakland ARTCC
 128.1 MHz = SoCal Approach High 2
@@ -140,10 +144,12 @@
 129.6 MHz = ARINC AOC
 129.625 MHz = Million Air KBUR/KSBD
 129.775 MHz = KSAN Terminal 2 West Ramp Control
+129.95 MHz = KSAN Alaska legacy ops
 129.975 MHz = KSAN Signature Aviation Ramp Ops
 130.1 MHz = Delta Airlines
 130.225 MHz = United Airlines
 130.3 MHz = Airline ops/FBO ramp dispatch
+130.325 MHz = AOC/ARINC
 130.35 MHz = Airline ops
 130.4 MHz = ARINC Enroute west
 130.375 MHz = MMTJ company and ramp dispatch
@@ -208,6 +214,7 @@
 135.95 MHz = FAA Flight Check/KPOC ATIS/KOXR ATIS
 135.975 MHz = Albuqerque Center/Oakland Center
 136.5 MHz = Jet Blue
+136.625 MHz = ?
 151.22 MHz = San Diego Mercy Air/Cal Fire Air Tactics
 151.355 MHz = San Diego Mercy Air/Cal Fire Air Tactics 2
 243.0 MHz = Guard/distress (military)

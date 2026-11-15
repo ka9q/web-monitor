@@ -61,6 +61,7 @@ Freq_MHz,Category,Facility,Function,Reception_Note
 123.300,GA/Training,Flight Training / Glider / Balloon,Aviation Instruction & Soaring (Warner Springs),East County airborne
 123.350,Flight Test,FCC Part 87 Flight Test (FAT),Aerospace Flight Test & Experimental,Regional & offshore
 123.500,Local FBO/Training,Montgomery-Gibbs (KMYF) / Soaring,KMYF FBO Ops & Glider Air-to-Air,Local KMYF / regional
+123.550,GA/Training/Balloon,Flight School / Glider / Hot-Air Balloon Ops,Aviation Instruction & Soaring/Ballooning (50 kHz above KMYF 123.500),Local Del Mar/Temecula airborne / verify not 123.500 bleed
 123.725,Local Airport,Montgomery-Gibbs Exec (KMYF),KMYF Clearance Delivery,Local KMYF (next door)
 123.800,Local Airport,Gillespie Field (KSEE),KSEE Tower (Secondary 27L/09R),East County local
 123.900,Local Airport,San Diego Intl (KSAN),KSAN Ground Control,Local KSAN surface

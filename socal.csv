@@ -47,6 +47,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 123.025,Helicopter/Air-Air,San Diego Area,Helicopter Air-to-Air / News / Tours,Local low-altitude rotorcraft
 123.050,Local Airport,Fallbrook Airpark (L18),CTAF / Unicom,North County general aviation
 123.500,Local FBO/Unicom,Crownair Aviation (KMYF),FBO Unicom / Flight School Ops,Local KMYF ramp
+123.550,GA/Training/Balloon,Flight School / Glider / Hot-Air Balloon Ops,Aviation Instruction & Soaring/Ballooning (50 kHz above KMYF 123.500),Local Del Mar/Temecula airborne / verify not 123.500 bleed
 123.725,Local Airport,Montgomery-Gibbs (KMYF),Clearance Delivery,Local IFR clearance
 123.725,Montgomery-Gibbs Exec (KMYF),Clearance Delivery,Local (airborne / elevated ramp)
 123.800,Gillespie Field (KSEE),Secondary Tower (Runway 17/35) / ZOA Skip,Local East County / night skip
@@ -166,6 +167,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 135.300,ARTCC En Route,Los Angeles Center (ZLA),Sector 26 High (Lebec RCAG),High-altitude en route
 135.300,Los Angeles Center (ZLA),Sector 26 High (Lebec RCAG),High-altitude en route
 136.500,Airline Ops,JetBlue Airways (JBU),Station Operations (KSAN),Local KSAN airline ops
+136.625,Data Bleed/AOC,VDL Mode 2 Guard / Upper AOC,ARINC VDL2 -25 kHz Splatter (from 136.650) or Upper Airline Ops,Verify not 136.650 VDL2 burst bleed
 
 VHF_MHz,UHF_MHz,Sector,Stratum,RCAG_Sites,Reception_From_KNKX
 118.825,236.825,Sector 57,High,Seligman AZ,Airborne only (high-altitude skip)
