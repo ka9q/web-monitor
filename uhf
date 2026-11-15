@@ -61,6 +61,9 @@ Freq_MHz,Category,Facility,Function,Reception_Note
 
 243.5-270 MHZ satcom downlinks
 292-318 MHz satcom uplinks
+328.6-335.4 ILS glide path
 
 Have Quick II FHSS
 960-1215 Link-16
+978.0 UAT
+1090.0 ADS-B
