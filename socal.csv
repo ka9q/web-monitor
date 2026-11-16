@@ -78,6 +78,7 @@ Frequency_MHz,Facility,Role_Sector,Reception_Type
 125.800,ARTCC En Route,Los Angeles Center (ZLA),Sector 04 Low (Northwest of LAX),High-altitude en route
 125.800,Los Angeles Center (ZLA),Sector 04 Low (Northwest of LAX),High-altitude en route
 125.900,Local Airport,San Diego Intl (KSAN),Lindbergh Clearance Delivery,Local Class B clearance
+126.050,TRACON/Discrete,Regional En Route / Offshore Discrete,Distant ARTCC/Terminal Sector or Range Discrete (50 kHz below KNKX 126.100),High-altitude skip / verify not 126.100 bleed
 126.125,Local/TRACON,MCAS Miramar (KNKX) / SoCal,Miramar Radar / Approach & Departure,Local military & civil radar
 126.125,MCAS Miramar (KNKX) / SoCal,Miramar Radar / Approach & Departure,Local military & civil radar
 126.350,ARTCC En Route,Los Angeles Center (ZLA),Sector 19 Low (Barstow RCAG),High-altitude en route
